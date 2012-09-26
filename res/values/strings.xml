@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, MainActivity!</string>
+    <string name="app_name">Exam Trainer</string>
+    <string name="main_greeting">Was möchsten Sie machen?</string>
+    <string name="main_btn_start_randtraining">Zufallsfragen beantworten</string>
+    
+    <string name="choseexam_lbl_activity">Fragenkatalog auswählen</string>
+    <string name="choseexam_btn_refresh_exam">Fragen im Katalog aktualisieren?</string>
+    <string name="choseexam_btn_run_test">Starte Training</string>
+    <string name="choseexam_menu_refresh">Neu laden</string>
+    <string name="choseexam_menu_back">Zurück</string>
+</resources>
