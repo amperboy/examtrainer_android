@@ -27,16 +27,17 @@ public final class R {
         public static final int exam_menu=0x7f050000;
     }
     public static final class string {
-        public static final int app_name=0x7f040003;
-        public static final int choseexam_btn_refresh_exam=0x7f040007;
-        public static final int choseexam_btn_run_test=0x7f040008;
-        public static final int choseexam_lbl_activity=0x7f040006;
-        public static final int choseexam_menu_back=0x7f04000a;
-        public static final int choseexam_menu_refresh=0x7f040009;
-        public static final int constants_uri_ws_prefix=0x7f040001;
-        public static final int constants_uri_ws_prefix_old=0x7f040000;
-        public static final int hello=0x7f040002;
-        public static final int main_btn_start_randtraining=0x7f040005;
-        public static final int main_greeting=0x7f040004;
+        public static final int app_name=0x7f040004;
+        public static final int choseexam_btn_refresh_exam=0x7f040008;
+        public static final int choseexam_btn_run_test=0x7f040009;
+        public static final int choseexam_lbl_activity=0x7f040007;
+        public static final int choseexam_menu_back=0x7f04000b;
+        public static final int choseexam_menu_refresh=0x7f04000a;
+        public static final int constants_uri_ws_prefix=0x7f040002;
+        public static final int constants_uri_ws_prefix_debug=0x7f040000;
+        public static final int constants_uri_ws_prefix_live=0x7f040001;
+        public static final int hello=0x7f040003;
+        public static final int main_btn_start_randtraining=0x7f040006;
+        public static final int main_greeting=0x7f040005;
     }
 }

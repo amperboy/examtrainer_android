@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <string name="constants_uri_ws_prefix_old">http://10.0.2.2/exam/ws/</string>
-        <string name="constants_uri_ws_prefix">http://exam.higger.de/ws/</string>
+        <string name="constants_uri_ws_prefix_debug">http://10.0.2.2/exam/ws/</string>
+        <string name="constants_uri_ws_prefix_live">http://exam.higger.de/ws/</string>
+        <string name="constants_uri_ws_prefix">@string/constants_uri_ws_prefix_live</string>
 </resources>
