@@ -1,10 +1,13 @@
 package de.higger.examtrainer.vo;
 
+import java.io.Serializable;
 import java.util.List;
 
 import de.higger.examtrainer.tool.StringBase64;
 
-public class Question {
+public class Question implements Serializable {
+	private static final long serialVersionUID = -5234208147461806142L;
+
 	private int id;
 	private String question;
 	private boolean image;
@@ -44,9 +47,8 @@ public class Question {
 
 	@Override
 	public String toString() {
-		return "Question [id=" + id + ", question=" + getQuestion() + ", image="
-				+ image + ", answers=" + answers + "]";
+		return "Question [id=" + id + ", question=" + getQuestion()
+				+ ", image=" + image + ", answers=" + answers + "]";
 	}
 
-	
 }

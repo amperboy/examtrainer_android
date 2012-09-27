@@ -1,8 +1,12 @@
 package de.higger.examtrainer.vo;
 
+import java.io.Serializable;
+
 import de.higger.examtrainer.tool.StringBase64;
 
-public class Exam {
+public class Exam implements Serializable {
+	private static final long serialVersionUID = 4976704795787994222L;
+	
 	private int id;
 	private String name;
 

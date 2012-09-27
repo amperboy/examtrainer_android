@@ -25,7 +25,7 @@ public class QuestionDBService {
 	public List<Question> getQuestions(int examId) {
 		SQLiteDatabase db = examDBHelper.getReadableDatabase();
 		Cursor c = db.query(QuestionDDL.TABLE_NAME, new String[] {
-				QuestionDDL.COLUMNNAME_ID, QuestionDDL.COLUMNNAME_QUESTION },
+				QuestionDDL.COLUMNNAME_ID, QuestionDDL.COLUMNNAME_QUESTION, QuestionDDL.COLUMNNAME_HAS_IMAGE },
 				QuestionDDL.COLUMNNAME_EXAM_ID + " = ?",
 				new String[] { Integer.toString(examId) }, null, null, null);
 
@@ -36,6 +36,7 @@ public class QuestionDBService {
 			int questionId = c.getInt(0);
 			question.setId(questionId);
 			question.setQuestion(c.getString(1));
+			question.setImage(c.getShort(2) == 1 ? true : false);
 
 			List<Answer> answers = answerDBService.getAnswers(questionId);
 			question.setAnswers(answers);
@@ -61,6 +62,7 @@ public class QuestionDBService {
 		values.put(QuestionDDL.COLUMNNAME_ID, question.getId());
 		values.put(QuestionDDL.COLUMNNAME_EXAM_ID, examId);
 		values.put(QuestionDDL.COLUMNNAME_QUESTION, question.getQuestion());
+		values.put(QuestionDDL.COLUMNNAME_HAS_IMAGE, question.isImage());
 
 		db.insert(QuestionDDL.TABLE_NAME, null, values);
 		db.close();

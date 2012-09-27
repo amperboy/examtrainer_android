@@ -17,7 +17,7 @@ public class MainActivity extends Activity {
 
 	public void runRandomTrainer(View view) {
 		Intent intent = new Intent(this, ChoseExamActivity.class);
-		intent.putExtra(ChoseExamActivity.TRAINING_MODE, TrainingMode.RANDOM);
+		intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE, TrainingMode.RANDOM);
 		startActivity(intent);
 	}
 }

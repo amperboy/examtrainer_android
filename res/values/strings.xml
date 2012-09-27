@@ -11,4 +11,9 @@
     <string name="choseexam_btn_run_test">Starte Training</string>
     <string name="choseexam_menu_refresh">Neu laden</string>
     <string name="choseexam_menu_back">Zurück</string>
+    
+    <string name="training_lbl_activity">Frage beantworten</string>
+    <string name="confirm_answer">Frage auswerten</string>
+    <string name="training_default_question">-</string>
+    <string name="next_answer">Weiter</string>
 </resources>

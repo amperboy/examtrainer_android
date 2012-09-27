@@ -24,6 +24,10 @@
             android:name=".activity.ChoseExamActivity"
             android:label="@string/choseexam_lbl_activity" >
         </activity>
+        <activity
+            android:name=".activity.TrainingActivity"
+            android:label="@string/training_lbl_activity" >
+        </activity>
     </application>
 
 </manifest>

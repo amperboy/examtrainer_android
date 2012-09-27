@@ -24,11 +24,14 @@ import de.higger.examtrainer.exception.WSRequestFailedException;
 import de.higger.examtrainer.vo.Answer;
 import de.higger.examtrainer.vo.Exam;
 import de.higger.examtrainer.vo.Question;
+import de.higger.examtrainer.vo.QuestionList;
 import de.higger.examtrainer.webservice.ExamWebService;
 import de.higger.examtrainer.webservice.QuestionWebService;
 
 public class ChoseExamActivity extends Activity {
-	public final static String TRAINING_MODE = "TRAINING_MODE";
+	public static final String EXTRA_TRAINING_MODE = "TRAINING_MODE";
+	public static final String EXTRA_TRAINING_QUESTIONS = "TRAINING_QUESTIONS";
+	
 	private final String LOG_TAG = Constants.LOG_TAG_PRE
 			+ getClass().getSimpleName();
 
@@ -47,7 +50,7 @@ public class ChoseExamActivity extends Activity {
 		initServices();
 
 		trainingMode = (TrainingMode) getIntent().getExtras()
-				.get(TRAINING_MODE);
+				.get(EXTRA_TRAINING_MODE);
 		setContentView(R.layout.chose_exam);
 
 		List<Exam> exams = retrieveAllExams();
@@ -76,7 +79,6 @@ public class ChoseExamActivity extends Activity {
 		}
 		return exams;
 	}
-
 
 	private void updateExamsInDatabase() {
 		try {
@@ -151,24 +153,24 @@ public class ChoseExamActivity extends Activity {
 					"Fragen aktualisiert.", Toast.LENGTH_SHORT);
 			toast.show();
 		}
-		List<Question> questionsList = retrieveAllQuestions(examId);
-		Log.d(LOG_TAG, "all questions: " + questionsList);
+		QuestionList questionList = new QuestionList();
+		questionList.setQuestions(retrieveAllQuestions(examId));
 
-		Intent intent = new Intent(this, ChoseExamActivity.class);
-		intent.putExtra(ChoseExamActivity.TRAINING_MODE, trainingMode);
+		Intent intent = new Intent(this, TrainingActivity.class);
+		intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE, trainingMode);
+		intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_QUESTIONS, questionList);
 		startActivity(intent);
 	}
 
 	private List<Question> retrieveAllQuestions(int examId) {
 		List<Question> questions = questionDBService.getQuestions(examId);
-		
+
 		if (questions.size() == 0) {
 			updateQuestionsInDatabase(examId);
 			questions = questionDBService.getQuestions(examId);
 		}
 		return questions;
 	}
-
 
 	private void updateQuestionsInDatabase(int examId) {
 		try {

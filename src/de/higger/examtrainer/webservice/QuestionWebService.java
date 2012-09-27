@@ -12,16 +12,9 @@ import de.higger.examtrainer.R;
 import de.higger.examtrainer.exception.WSRequestFailedException;
 import de.higger.examtrainer.tool.WebService;
 import de.higger.examtrainer.vo.Question;
+import de.higger.examtrainer.vo.QuestionList;
 
 public class QuestionWebService {
-	private class QuestionsList {
-		private List<Question> questions;
-
-		public List<Question> getQuestions() {
-			return questions;
-		}
-	}
-	
 	private WebService webService;
 
 	public QuestionWebService(Context context) {
@@ -39,7 +32,7 @@ public class QuestionWebService {
 			throw new WSRequestFailedException("WebService request fehlgeschlagen.");
 		}
 
-		QuestionsList questionsList = new Gson().fromJson(response, QuestionsList.class);
+		QuestionList questionsList = new Gson().fromJson(response, QuestionList.class);
 		
 		return questionsList.getQuestions();
 	}
