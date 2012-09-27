@@ -13,7 +13,7 @@ import de.higger.examtrainer.exception.WSRequestFailedException;
 import de.higger.examtrainer.tool.WebService;
 import de.higger.examtrainer.vo.Question;
 
-public class QuestionService {
+public class QuestionWebService {
 	private class QuestionsList {
 		private List<Question> questions;
 
@@ -24,7 +24,7 @@ public class QuestionService {
 	
 	private WebService webService;
 
-	public QuestionService(Context context) {
+	public QuestionWebService(Context context) {
 		String url = context.getString(R.string.constants_uri_ws_prefix) + "get_all_questions.php";
 		webService = new WebService(url);
 	}

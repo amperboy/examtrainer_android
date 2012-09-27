@@ -30,10 +30,11 @@ public class Answer {
 	public void setCorrect(boolean isCorrect) {
 		this.isCorrect = isCorrect;
 	}
-	
+
 	@Override
 	public String toString() {
-		return getAnswer();
+		return "Answer [id=" + id + ", answer=" + getAnswer() + ", isCorrect="
+				+ isCorrect + "]";
 	}
 
 }

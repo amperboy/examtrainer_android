@@ -1,4 +1,4 @@
-package de.higger.examtrainer.db;
+package de.higger.examtrainer.db.ddl;
 
 public class ExamDDL {
 	public static final String CREATE_TABLE = "CREATE TABLE " + ExamDDL.TABLE_NAME + " ("

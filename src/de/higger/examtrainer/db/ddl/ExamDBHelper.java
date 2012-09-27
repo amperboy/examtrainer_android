@@ -1,4 +1,4 @@
-package de.higger.examtrainer.db;
+package de.higger.examtrainer.db.ddl;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
