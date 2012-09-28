@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -31,7 +32,7 @@ import de.higger.examtrainer.webservice.QuestionWebService;
 public class ChoseExamActivity extends Activity {
 	public static final String EXTRA_TRAINING_MODE = "TRAINING_MODE";
 	public static final String EXTRA_TRAINING_QUESTIONS = "TRAINING_QUESTIONS";
-	
+
 	private final String LOG_TAG = Constants.LOG_TAG_PRE
 			+ getClass().getSimpleName();
 
@@ -49,17 +50,30 @@ public class ChoseExamActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		initServices();
 
-		trainingMode = (TrainingMode) getIntent().getExtras()
-				.get(EXTRA_TRAINING_MODE);
+		trainingMode = (TrainingMode) getIntent().getExtras().get(
+				EXTRA_TRAINING_MODE);
 		setContentView(R.layout.chose_exam);
 
-		List<Exam> exams = retrieveAllExams();
+		AsyncTask<Void, Void, List<Exam>> asyncTask = new AsyncTask<Void, Void, List<Exam>>() {
 
-		if (exams.size() == 0) {
-			finish();
-		} else {
-			refillExamSpinner(exams);
-		}
+			@Override
+			protected List<Exam> doInBackground(Void... arg0) {
+
+				return retrieveAllExams();
+			}
+
+			@Override
+			protected void onPostExecute(List<Exam> exams) {
+				if (exams.size() == 0) {
+					finish();
+				} else {
+					refillExamSpinner(exams);
+				}
+			}
+		};
+
+		asyncTask.execute(null);
+
 	}
 
 	private void initServices() {
@@ -124,13 +138,7 @@ public class ChoseExamActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.exam_menu_refresh:
-			updateExamsInDatabase();
-			List<Exam> exams = examDBService.getAllExams();
-			refillExamSpinner(exams);
-
-			Toast toast = Toast.makeText(getApplicationContext(),
-					"Fragenbšgen aktualisiert", Toast.LENGTH_SHORT);
-			toast.show();
+			updateExamsMenu();
 			break;
 		case R.id.exam_menu_back:
 			finish();
@@ -140,26 +148,69 @@ public class ChoseExamActivity extends Activity {
 		return true;
 	}
 
+	private void updateExamsMenu() {
+		AsyncTask<Void, Void, List<Exam>> asyncTask = new AsyncTask<Void, Void, List<Exam>>() {
+
+			@Override
+			protected List<Exam> doInBackground(Void... arg0) {
+				updateExamsInDatabase();
+				List<Exam> exams = examDBService.getAllExams();
+
+				return exams;
+			}
+
+			@Override
+			protected void onPostExecute(List<Exam> exams) {
+				refillExamSpinner(exams);
+
+				Toast toast = Toast.makeText(getApplicationContext(),
+						"Fragenbšgen aktualisiert", Toast.LENGTH_SHORT);
+				toast.show();
+			}
+		};
+
+		asyncTask.execute(null);
+
+	}
+
 	public void startTrainer(View view) {
 		Spinner spinner = (Spinner) findViewById(R.id.choseexam_spn_exam);
 
-		ToggleButton refreshExam = (ToggleButton) findViewById(R.id.choseexam_btn_refresh_exam);
-		Exam selectedExam = (Exam) spinner.getSelectedItem();
+		final ToggleButton refreshExam = (ToggleButton) findViewById(R.id.choseexam_btn_refresh_exam);
+		final Exam selectedExam = (Exam) spinner.getSelectedItem();
 
-		int examId = selectedExam.getId();
-		if (refreshExam.isChecked()) {
-			updateQuestionsInDatabase(examId);
-			Toast toast = Toast.makeText(getApplicationContext(),
-					"Fragen aktualisiert.", Toast.LENGTH_SHORT);
-			toast.show();
-		}
-		QuestionList questionList = new QuestionList();
-		questionList.setQuestions(retrieveAllQuestions(examId));
+		AsyncTask<Void, Void, List<Question>> asyncTask = new AsyncTask<Void, Void, List<Question>>() {
+			@Override
+			protected List<Question> doInBackground(Void... voids) {
+				int examId = selectedExam.getId();
+				
+				if (refreshExam.isChecked()) {
+					updateQuestionsInDatabase(examId);
 
-		Intent intent = new Intent(this, TrainingActivity.class);
-		intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE, trainingMode);
-		intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_QUESTIONS, questionList);
-		startActivity(intent);
+					return questionDBService.getQuestions(examId);
+				}
+				else {
+					return retrieveAllQuestions(examId);
+				}
+			}
+			
+			@Override
+			protected void onPostExecute(List<Question> questions) {
+				QuestionList questionList = new QuestionList();
+				questionList.setQuestions(questions);
+
+				Intent intent = new Intent(ChoseExamActivity.this, TrainingActivity.class);
+				intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE, trainingMode);
+				intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_QUESTIONS,
+						questionList);
+				startActivity(intent);
+			}
+		};
+		
+		asyncTask.execute(null);
+		
+		
+	
 	}
 
 	private List<Question> retrieveAllQuestions(int examId) {

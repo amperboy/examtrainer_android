@@ -146,7 +146,7 @@ public class WebService {
 		try {
 			response = httpClient.execute(httpGet);
 		} catch (Exception e) {
-			Log.e(WebServiceTAG, e.getMessage());
+			Log.e(WebServiceTAG, "error: "+e+" msg:"+e.getMessage());
 		}
 
 		// we assume that the response body contains the error message
