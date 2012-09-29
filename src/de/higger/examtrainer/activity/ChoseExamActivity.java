@@ -3,6 +3,7 @@ package de.higger.examtrainer.activity;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,6 +31,23 @@ import de.higger.examtrainer.webservice.ExamWebService;
 import de.higger.examtrainer.webservice.QuestionWebService;
 
 public class ChoseExamActivity extends Activity {
+	private abstract class BusyAsynchTask<Params, Progress, Result> extends
+			AsyncTask<Params, Progress, Result> {
+
+		private ProgressDialog mDialog;
+
+		@Override
+		protected void onPreExecute() {
+			mDialog = ProgressDialog.show(ChoseExamActivity.this, "", "wait...");
+		}
+
+		@Override
+		protected void onPostExecute(Result result) {
+			 mDialog.cancel();
+//			mDialog.hide();
+		}
+	}
+
 	public static final String EXTRA_TRAINING_MODE = "TRAINING_MODE";
 	public static final String EXTRA_TRAINING_QUESTIONS = "TRAINING_QUESTIONS";
 
@@ -54,7 +72,7 @@ public class ChoseExamActivity extends Activity {
 				EXTRA_TRAINING_MODE);
 		setContentView(R.layout.chose_exam);
 
-		AsyncTask<Void, Void, List<Exam>> asyncTask = new AsyncTask<Void, Void, List<Exam>>() {
+		AsyncTask<Void, Void, List<Exam>> asyncTask = new BusyAsynchTask<Void, Void, List<Exam>>() {
 
 			@Override
 			protected List<Exam> doInBackground(Void... arg0) {
@@ -64,6 +82,8 @@ public class ChoseExamActivity extends Activity {
 
 			@Override
 			protected void onPostExecute(List<Exam> exams) {
+				super.onPostExecute(exams);
+
 				if (exams.size() == 0) {
 					finish();
 				} else {
@@ -149,7 +169,7 @@ public class ChoseExamActivity extends Activity {
 	}
 
 	private void updateExamsMenu() {
-		AsyncTask<Void, Void, List<Exam>> asyncTask = new AsyncTask<Void, Void, List<Exam>>() {
+		AsyncTask<Void, Void, List<Exam>> asyncTask = new BusyAsynchTask<Void, Void, List<Exam>>() {
 
 			@Override
 			protected List<Exam> doInBackground(Void... arg0) {
@@ -161,11 +181,15 @@ public class ChoseExamActivity extends Activity {
 
 			@Override
 			protected void onPostExecute(List<Exam> exams) {
-				refillExamSpinner(exams);
+				super.onPostExecute(exams);
 
-				Toast toast = Toast.makeText(getApplicationContext(),
-						"Fragenbšgen aktualisiert", Toast.LENGTH_SHORT);
-				toast.show();
+				if (exams.size() > 0) {
+					refillExamSpinner(exams);
+
+					Toast toast = Toast.makeText(getApplicationContext(),
+							"Fragenbšgen aktualisiert", Toast.LENGTH_SHORT);
+					toast.show();
+				}
 			}
 		};
 
@@ -179,38 +203,48 @@ public class ChoseExamActivity extends Activity {
 		final ToggleButton refreshExam = (ToggleButton) findViewById(R.id.choseexam_btn_refresh_exam);
 		final Exam selectedExam = (Exam) spinner.getSelectedItem();
 
-		AsyncTask<Void, Void, List<Question>> asyncTask = new AsyncTask<Void, Void, List<Question>>() {
+		AsyncTask<Void, Void, List<Question>> asyncTask = new BusyAsynchTask<Void, Void, List<Question>>() {
+
 			@Override
 			protected List<Question> doInBackground(Void... voids) {
 				int examId = selectedExam.getId();
-				
+
 				if (refreshExam.isChecked()) {
 					updateQuestionsInDatabase(examId);
 
 					return questionDBService.getQuestions(examId);
-				}
-				else {
+				} else {
 					return retrieveAllQuestions(examId);
 				}
 			}
-			
+
 			@Override
 			protected void onPostExecute(List<Question> questions) {
-				QuestionList questionList = new QuestionList();
-				questionList.setQuestions(questions);
+				super.onPostExecute(questions);
 
-				Intent intent = new Intent(ChoseExamActivity.this, TrainingActivity.class);
-				intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE, trainingMode);
-				intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_QUESTIONS,
-						questionList);
-				startActivity(intent);
+				if (questions.size() > 0) {
+					QuestionList questionList = new QuestionList();
+					questionList.setQuestions(questions);
+
+					Intent intent = new Intent(ChoseExamActivity.this,
+							TrainingActivity.class);
+					intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE,
+							trainingMode);
+					intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_QUESTIONS,
+							questionList);
+					startActivity(intent);
+				} else {
+					Toast toast = Toast.makeText(getApplicationContext(),
+							"Keine Fragen in dem Katalog vorhanden",
+							Toast.LENGTH_SHORT);
+					toast.show();
+				}
+
 			}
 		};
-		
+
 		asyncTask.execute(null);
-		
-		
-	
+
 	}
 
 	private List<Question> retrieveAllQuestions(int examId) {
