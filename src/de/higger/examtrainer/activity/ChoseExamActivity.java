@@ -38,13 +38,18 @@ public class ChoseExamActivity extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-			mDialog = ProgressDialog.show(ChoseExamActivity.this, "", "wait...");
+			mDialog = ProgressDialog
+					.show(ChoseExamActivity.this, "", "wait...");
 		}
 
 		@Override
-		protected void onPostExecute(Result result) {
-			 mDialog.cancel();
-//			mDialog.hide();
+		@Deprecated
+		protected final void onPostExecute(Result result) {
+			onPostExecuteComplete(result);
+			mDialog.cancel();
+		}
+
+		protected void onPostExecuteComplete(Result result) {
 		}
 	}
 
@@ -81,9 +86,7 @@ public class ChoseExamActivity extends Activity {
 			}
 
 			@Override
-			protected void onPostExecute(List<Exam> exams) {
-				super.onPostExecute(exams);
-
+			protected void onPostExecuteComplete(List<Exam> exams) {
 				if (exams.size() == 0) {
 					finish();
 				} else {
@@ -92,7 +95,7 @@ public class ChoseExamActivity extends Activity {
 			}
 		};
 
-		asyncTask.execute(null);
+		asyncTask.execute();
 
 	}
 
@@ -180,9 +183,7 @@ public class ChoseExamActivity extends Activity {
 			}
 
 			@Override
-			protected void onPostExecute(List<Exam> exams) {
-				super.onPostExecute(exams);
-
+			protected void onPostExecuteComplete(List<Exam> exams) {
 				if (exams.size() > 0) {
 					refillExamSpinner(exams);
 
@@ -193,7 +194,7 @@ public class ChoseExamActivity extends Activity {
 			}
 		};
 
-		asyncTask.execute(null);
+		asyncTask.execute();
 
 	}
 
@@ -219,9 +220,7 @@ public class ChoseExamActivity extends Activity {
 			}
 
 			@Override
-			protected void onPostExecute(List<Question> questions) {
-				super.onPostExecute(questions);
-
+			protected void onPostExecuteComplete(List<Question> questions) {
 				if (questions.size() > 0) {
 					QuestionList questionList = new QuestionList();
 					questionList.setQuestions(questions);
@@ -243,7 +242,7 @@ public class ChoseExamActivity extends Activity {
 			}
 		};
 
-		asyncTask.execute(null);
+		asyncTask.execute();
 
 	}
 
