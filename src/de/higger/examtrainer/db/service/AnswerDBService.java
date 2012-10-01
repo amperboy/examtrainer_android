@@ -7,11 +7,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import de.higger.examtrainer.Constants;
 import de.higger.examtrainer.db.ddl.AnswerDDL;
 import de.higger.examtrainer.db.ddl.ExamDBHelper;
+import de.higger.examtrainer.db.ddl.ExamDDL;
+import de.higger.examtrainer.db.ddl.QuestionDDL;
 import de.higger.examtrainer.vo.Answer;
 
 public class AnswerDBService {
+	private final String LOG_TAG = Constants.LOG_TAG_PRE
+			+ getClass().getSimpleName();
+
 	private ExamDBHelper examDBHelper;
 
 	public AnswerDBService(Context context) {

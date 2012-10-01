@@ -134,6 +134,8 @@ public class ChoseExamActivity extends Activity {
 				}
 
 				Log.v(LOG_TAG, "added " + i + " exams");
+				questionDBService.removeUnassignedQuestions();
+
 			}
 		} catch (WSRequestFailedException e) {
 			Toast toast = Toast.makeText(getApplicationContext(),
@@ -291,6 +293,8 @@ public class ChoseExamActivity extends Activity {
 
 				Log.v(LOG_TAG, "added " + i + " questions and " + k
 						+ " answers");
+//				answerDBService.removeUnassignedAnswers();
+
 			}
 		} catch (WSRequestFailedException e) {
 			Toast toast = Toast.makeText(getApplicationContext(),

@@ -7,12 +7,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import de.higger.examtrainer.Constants;
 import de.higger.examtrainer.db.ddl.ExamDBHelper;
+import de.higger.examtrainer.db.ddl.ExamDDL;
 import de.higger.examtrainer.db.ddl.QuestionDDL;
 import de.higger.examtrainer.vo.Answer;
 import de.higger.examtrainer.vo.Question;
 
 public class QuestionDBService {
+	private final String LOG_TAG = Constants.LOG_TAG_PRE
+			+ getClass().getSimpleName();
+
 	private ExamDBHelper examDBHelper;
 	private AnswerDBService answerDBService;
 
@@ -25,7 +31,8 @@ public class QuestionDBService {
 	public List<Question> getQuestions(int examId) {
 		SQLiteDatabase db = examDBHelper.getReadableDatabase();
 		Cursor c = db.query(QuestionDDL.TABLE_NAME, new String[] {
-				QuestionDDL.COLUMNNAME_ID, QuestionDDL.COLUMNNAME_QUESTION, QuestionDDL.COLUMNNAME_HAS_IMAGE },
+				QuestionDDL.COLUMNNAME_ID, QuestionDDL.COLUMNNAME_QUESTION,
+				QuestionDDL.COLUMNNAME_HAS_IMAGE },
 				QuestionDDL.COLUMNNAME_EXAM_ID + " = ?",
 				new String[] { Integer.toString(examId) }, null, null, null);
 
@@ -55,9 +62,20 @@ public class QuestionDBService {
 		db.close();
 	}
 
+	public void removeUnassignedQuestions() {
+		SQLiteDatabase db = examDBHelper.getWritableDatabase();
+		String query = "DELETE FROM " + QuestionDDL.TABLE_NAME + " WHERE "
+				+ QuestionDDL.COLUMNNAME_EXAM_ID + " NOT IN (SELECT "
+				+ ExamDDL.COLUMNNAME_ID + " FROM " + ExamDDL.TABLE_NAME + ");";
+		db.execSQL(query);
+		db.close();
+		
+		Log.v(LOG_TAG, "all unassigned questions removed");
+	}
+
 	public void createQuestion(int examId, Question question) {
 		SQLiteDatabase db = examDBHelper.getWritableDatabase();
-		
+
 		ContentValues values = new ContentValues();
 		values.put(QuestionDDL.COLUMNNAME_ID, question.getId());
 		values.put(QuestionDDL.COLUMNNAME_EXAM_ID, examId);
