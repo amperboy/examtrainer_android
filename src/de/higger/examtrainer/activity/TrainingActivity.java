@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Random;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
@@ -78,10 +80,21 @@ public class TrainingActivity extends Activity {
 			ImageView imageView = new ImageView(this);
 
 			File filesDir = getFilesDir();
-			imageView.setImageURI(Uri.parse(filesDir.getAbsolutePath()
-					+ "/Geocaching_Logo.jpg"));
+			final Uri imageUri = Uri.parse(filesDir.getAbsolutePath()
+					+ "/Geocaching_Logo.jpg");
+			imageView.setImageURI(imageUri);
 
-			View wrapper = findViewById(R.id.trn_view_wrapper);
+			imageView.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					Intent intent = new Intent();
+					intent.setAction(android.content.Intent.ACTION_VIEW);
+					File file = new File(imageUri.toString());
+					intent.setDataAndType(Uri.fromFile(file), "image/*");
+					startActivity(intent);
+				}
+			});
 
 			imageFrame.addView(imageView);
 		}
