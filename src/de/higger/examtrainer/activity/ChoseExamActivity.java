@@ -38,18 +38,20 @@ public class ChoseExamActivity extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-			mDialog = ProgressDialog
-					.show(ChoseExamActivity.this, "", "wait...");
+			mDialog = ProgressDialog.show(ChoseExamActivity.this, null,
+					ChoseExamActivity.this
+							.getText(R.string.progressdiaglog_default));
+			mDialog.setCancelable(false);
 		}
 
 		@Override
 		@Deprecated
 		protected final void onPostExecute(Result result) {
-			onPostExecuteComplete(result);
+			onExecuteComplete(result);
 			mDialog.cancel();
 		}
 
-		protected void onPostExecuteComplete(Result result) {
+		protected void onExecuteComplete(Result result) {
 		}
 	}
 
@@ -78,25 +80,24 @@ public class ChoseExamActivity extends Activity {
 		setContentView(R.layout.chose_exam);
 
 		AsyncTask<Void, Void, List<Exam>> asyncTask = new BusyAsynchTask<Void, Void, List<Exam>>() {
-
 			@Override
 			protected List<Exam> doInBackground(Void... arg0) {
-
 				return retrieveAllExams();
 			}
 
 			@Override
-			protected void onPostExecuteComplete(List<Exam> exams) {
+			protected void onExecuteComplete(List<Exam> exams) {
 				if (exams.size() == 0) {
+					Log.d(LOG_TAG, "no exams available");
 					finish();
 				} else {
+					Log.d(LOG_TAG, "put exams into spinner");
 					refillExamSpinner(exams);
 				}
 			}
 		};
 
 		asyncTask.execute();
-
 	}
 
 	private void initServices() {
@@ -110,6 +111,7 @@ public class ChoseExamActivity extends Activity {
 
 	private List<Exam> retrieveAllExams() {
 		List<Exam> exams = examDBService.getAllExams();
+
 		if (exams.size() == 0) {
 			updateExamsInDatabase();
 			exams = examDBService.getAllExams();
@@ -118,6 +120,7 @@ public class ChoseExamActivity extends Activity {
 	}
 
 	private void updateExamsInDatabase() {
+		Log.d(LOG_TAG, "update exams in database");
 		try {
 			List<Exam> exams = examWebService.getExams();
 
@@ -129,13 +132,15 @@ public class ChoseExamActivity extends Activity {
 					examDBService.addExam(exam);
 					i++;
 				}
-				Log.v(LOG_TAG, i + " exam rows inserted");
+
+				Log.v(LOG_TAG, "added " + i + " exams");
 			}
 		} catch (WSRequestFailedException e) {
 			Toast toast = Toast.makeText(getApplicationContext(),
-					"Fragenbšgen konnten nicht geladen werden.",
+					getText(R.string.choseexam_exams_load_error),
 					Toast.LENGTH_SHORT);
 			toast.show();
+			Log.e(LOG_TAG, "exams coundn't load", e);
 		}
 	}
 
@@ -147,6 +152,7 @@ public class ChoseExamActivity extends Activity {
 		spinnerArrayAdapter
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spinner.setAdapter(spinnerArrayAdapter);
+		Log.d(LOG_TAG, "exam spinner refreshed");
 	}
 
 	@Override
@@ -172,8 +178,9 @@ public class ChoseExamActivity extends Activity {
 	}
 
 	private void updateExamsMenu() {
-		AsyncTask<Void, Void, List<Exam>> asyncTask = new BusyAsynchTask<Void, Void, List<Exam>>() {
+		Log.d(LOG_TAG, "update exams spinner");
 
+		AsyncTask<Void, Void, List<Exam>> asyncTask = new BusyAsynchTask<Void, Void, List<Exam>>() {
 			@Override
 			protected List<Exam> doInBackground(Void... arg0) {
 				updateExamsInDatabase();
@@ -183,13 +190,15 @@ public class ChoseExamActivity extends Activity {
 			}
 
 			@Override
-			protected void onPostExecuteComplete(List<Exam> exams) {
+			protected void onExecuteComplete(List<Exam> exams) {
 				if (exams.size() > 0) {
 					refillExamSpinner(exams);
 
 					Toast toast = Toast.makeText(getApplicationContext(),
-							"Fragenbšgen aktualisiert", Toast.LENGTH_SHORT);
+							getText(R.string.choseexam_exams_load_success),
+							Toast.LENGTH_SHORT);
 					toast.show();
+					Log.d(LOG_TAG, "exams refreshed");
 				}
 			}
 		};
@@ -199,18 +208,19 @@ public class ChoseExamActivity extends Activity {
 	}
 
 	public void startTrainer(View view) {
+		Log.d(LOG_TAG, "start training activity");
 		Spinner spinner = (Spinner) findViewById(R.id.choseexam_spn_exam);
 
 		final ToggleButton refreshExam = (ToggleButton) findViewById(R.id.choseexam_btn_refresh_exam);
 		final Exam selectedExam = (Exam) spinner.getSelectedItem();
 
 		AsyncTask<Void, Void, List<Question>> asyncTask = new BusyAsynchTask<Void, Void, List<Question>>() {
-
 			@Override
 			protected List<Question> doInBackground(Void... voids) {
 				int examId = selectedExam.getId();
 
 				if (refreshExam.isChecked()) {
+					Log.d(LOG_TAG, "trigger questions update");
 					updateQuestionsInDatabase(examId);
 
 					return questionDBService.getQuestions(examId);
@@ -220,8 +230,9 @@ public class ChoseExamActivity extends Activity {
 			}
 
 			@Override
-			protected void onPostExecuteComplete(List<Question> questions) {
+			protected void onExecuteComplete(List<Question> questions) {
 				if (questions.size() > 0) {
+					Log.d(LOG_TAG, "send intent to start training");
 					QuestionList questionList = new QuestionList();
 					questionList.setQuestions(questions);
 
@@ -233,8 +244,9 @@ public class ChoseExamActivity extends Activity {
 							questionList);
 					startActivity(intent);
 				} else {
+					Log.d(LOG_TAG, "no questions available to start training");
 					Toast toast = Toast.makeText(getApplicationContext(),
-							"Keine Fragen in dem Katalog vorhanden",
+							getText(R.string.choseexam_start_no_questions),
 							Toast.LENGTH_SHORT);
 					toast.show();
 				}
@@ -258,6 +270,7 @@ public class ChoseExamActivity extends Activity {
 
 	private void updateQuestionsInDatabase(int examId) {
 		try {
+			Log.d(LOG_TAG, "trigger question update");
 			List<Question> questions = questionWebService.getQuestions(examId);
 
 			if (questions.size() > 0) {
@@ -275,13 +288,16 @@ public class ChoseExamActivity extends Activity {
 
 					i++;
 				}
-				Log.v(LOG_TAG, i + " question rows inserted");
-				Log.v(LOG_TAG, k + " answer rows inserted");
+
+				Log.v(LOG_TAG, "added " + i + " questions and " + k
+						+ " answers");
 			}
 		} catch (WSRequestFailedException e) {
 			Toast toast = Toast.makeText(getApplicationContext(),
-					"Fragen konnten nicht geladen werden.", Toast.LENGTH_SHORT);
+					getText(R.string.choseexam_questions_load_error),
+					Toast.LENGTH_SHORT);
 			toast.show();
+			Log.e(LOG_TAG, "question coundn't received", e);
 		}
 	}
 

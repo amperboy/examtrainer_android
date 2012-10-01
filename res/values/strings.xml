@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World, MainActivity!</string>
     <string name="app_name">Exam Trainer</string>
+    
     <string name="main_greeting">Was möchsten Sie machen?</string>
     <string name="main_btn_start_randtraining">Zufallsfragen beantworten</string>
     
@@ -11,6 +10,12 @@
     <string name="choseexam_btn_run_test">Starte Training</string>
     <string name="choseexam_menu_refresh">Neu laden</string>
     <string name="choseexam_menu_back">Zurück</string>
+    <string name="choseexam_exams_load_error">Fragebögen konnten nicht geladen werden</string>
+    <string name="choseexam_exams_load_success">Fragebögen aktualisiert</string>
+    <string name="choseexam_start_no_questions">Keine Fragen in dem Fragenkatalog</string>
+    <string name="choseexam_questions_load_error">Fragen konnten nicht geladen werden</string>
+    
+    <string name="progressdiaglog_default">Bitte warten &#8230;</string>
     
     <string name="training_lbl_activity">Frage beantworten</string>
     <string name="confirm_answer">Frage auswerten</string>

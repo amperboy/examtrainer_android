@@ -157,6 +157,8 @@ public class TrainingActivity extends Activity {
 		for (Answer answer : displayedAnswers) {
 			TableRow answerRow = (TableRow) answersLayout.getChildAt(i);
 			CheckBox answerCheckBox = (CheckBox) answerRow.getChildAt(0);
+			answerCheckBox.setEnabled(false);
+			
 			TextView answerText = (TextView) answerRow.getChildAt(1);
 
 			if (answerCheckBox.isChecked() != answer.isCorrect()) {
