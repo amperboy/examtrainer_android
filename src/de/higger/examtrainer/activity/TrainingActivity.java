@@ -74,14 +74,10 @@ public class TrainingActivity extends Activity {
 			imageFrame.removeViewAt(0);
 		}
 
-		// question.setImage(true); //FIXME DEBUG ONLY
-
 		if (question.isImage()) {
 			ImageView imageView = new ImageView(this);
 
 			File filesDir = getFilesDir();
-			Log.d(LOG_TAG, "current path: " + filesDir.getAbsolutePath());
-
 			imageView.setImageURI(Uri.parse(filesDir.getAbsolutePath()
 					+ "/Geocaching_Logo.jpg"));
 
@@ -179,7 +175,7 @@ public class TrainingActivity extends Activity {
 		} else {
 			questionResultDBService.addWrong(displayedQuestionId);
 		}
-		
+
 		Log.d(LOG_TAG, "answered question " + displayedQuestionId
 				+ " correkt? " + isAllCorrect);
 	}

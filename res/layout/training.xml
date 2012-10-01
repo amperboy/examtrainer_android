@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/trn_view_wrapper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-     >
+    android:scrollbars="vertical" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical" >
 
+        <!-- question text -->
         <TextView
             android:id="@+id/trn_text_question_text"
             android:layout_width="match_parent"
@@ -18,42 +18,43 @@
             android:text="@string/training_default_question"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
+        <!-- to fill with image -->
         <FrameLayout
             android:id="@+id/trn_image_placeholder"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-             >
+            android:layout_height="wrap_content" >
         </FrameLayout>
 
+        <!-- To fill with answers -->
         <TableLayout
             android:id="@+id/trn_answers_placeholder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
         </TableLayout>
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/trn_btn_confirm"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:enabled="true"
-            android:onClick="clickContinue"
-            android:text="@string/confirm_answer" />
+            android:layout_gravity="bottom"
+            android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/trn_btn_next"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:onClick="clickContinue"
-            android:text="@string/next_answer" />
+            <Button
+                android:id="@+id/trn_btn_confirm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="true"
+                android:onClick="clickContinue"
+                android:text="@string/confirm_answer" />
+
+            <Button
+                android:id="@+id/trn_btn_next"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:onClick="clickContinue"
+                android:text="@string/next_answer" />
+        </LinearLayout>
     </LinearLayout>
 
-</FrameLayout>
+</ScrollView>
