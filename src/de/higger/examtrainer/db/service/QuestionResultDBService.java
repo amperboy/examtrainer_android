@@ -47,6 +47,10 @@ public class QuestionResultDBService {
 			updateResult(questionResult);
 		}
 
+		Log.v(LOG_TAG, "questionId: " + questionId + ", correct: "
+				+ questionResult.getAnsweredCorrect() + ", wrong: "
+				+ questionResult.getAnsweredWrong());
+
 	}
 
 	public QuestionResult getQuestionResult(int questionId) {
@@ -68,9 +72,6 @@ public class QuestionResultDBService {
 			questionResult.setAnsweredCorrect(ca.getInt(0));
 			questionResult.setAnsweredWrong(ca.getInt(1));
 
-			Log.v(LOG_TAG, "questionId: " + questionId + ", correct: "
-					+ questionResult.getAnsweredCorrect() + ", wrong: "
-					+ questionResult.getAnsweredWrong());
 		}
 		db.close();
 
