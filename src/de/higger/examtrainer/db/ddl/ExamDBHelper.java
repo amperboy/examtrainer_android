@@ -23,14 +23,15 @@ public class ExamDBHelper extends SQLiteOpenHelper {
 		db.execSQL(ExamDDL.CREATE_TABLE);
 		db.execSQL(QuestionDDL.CREATE_TABLE);
 		db.execSQL(AnswerDDL.CREATE_TABLE);
+		db.execSQL(QuestionResultDDL.CREATE_TABLE);
 
 		Log.v(TAG, "Database created");
 	}
 
 	@Override
-	public void onUpgrade(SQLiteDatabase db, int version_old, int version_new) {
-		Log.v(TAG, "Database updated from version " + version_old + " to "
-				+ version_new);
+	public void onUpgrade(SQLiteDatabase db, int versionOld, int versionNew) {
+		Log.v(TAG, "Database updated from version " + versionOld + " to "
+				+ versionNew);
 	}
 
 	@Override

@@ -22,12 +22,12 @@ import android.widget.TextView;
 import de.higger.examtrainer.Constants;
 import de.higger.examtrainer.R;
 import de.higger.examtrainer.TrainingMode;
+import de.higger.examtrainer.db.service.QuestionResultDBService;
 import de.higger.examtrainer.vo.Answer;
 import de.higger.examtrainer.vo.Question;
 import de.higger.examtrainer.vo.QuestionList;
 
 public class TrainingActivity extends Activity {
-
 	private final String LOG_TAG = Constants.LOG_TAG_PRE
 			+ getClass().getSimpleName();
 
@@ -38,9 +38,12 @@ public class TrainingActivity extends Activity {
 	private int displayedQuestionId;
 	private List<Answer> displayedAnswers;
 
+	private QuestionResultDBService questionResultDBService;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		initServices();
 
 		trainingMode = (TrainingMode) getIntent().getExtras().get(
 				ChoseExamActivity.EXTRA_TRAINING_MODE);
@@ -52,8 +55,10 @@ public class TrainingActivity extends Activity {
 		allQuestions = questionList.getQuestions();
 
 		showNextQuestion();
+	}
 
-		// Collections.copy(destination, source)
+	private void initServices() {
+		questionResultDBService = new QuestionResultDBService(this);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -68,9 +73,9 @@ public class TrainingActivity extends Activity {
 		if (imageFrame.getChildCount() > 0) {
 			imageFrame.removeViewAt(0);
 		}
-		
-//		question.setImage(true); //FIXME DEBUG ONLY
-		
+
+		// question.setImage(true); //FIXME DEBUG ONLY
+
 		if (question.isImage()) {
 			ImageView imageView = new ImageView(this);
 
@@ -80,9 +85,8 @@ public class TrainingActivity extends Activity {
 			imageView.setImageURI(Uri.parse(filesDir.getAbsolutePath()
 					+ "/Geocaching_Logo.jpg"));
 
-			
 			View wrapper = findViewById(R.id.trn_view_wrapper);
-			
+
 			imageFrame.addView(imageView);
 		}
 
@@ -158,7 +162,7 @@ public class TrainingActivity extends Activity {
 			TableRow answerRow = (TableRow) answersLayout.getChildAt(i);
 			CheckBox answerCheckBox = (CheckBox) answerRow.getChildAt(0);
 			answerCheckBox.setEnabled(false);
-			
+
 			TextView answerText = (TextView) answerRow.getChildAt(1);
 
 			if (answerCheckBox.isChecked() != answer.isCorrect()) {
@@ -170,6 +174,12 @@ public class TrainingActivity extends Activity {
 			i++;
 		}
 
+		if (isAllCorrect) {
+			questionResultDBService.addCorrect(displayedQuestionId);
+		} else {
+			questionResultDBService.addWrong(displayedQuestionId);
+		}
+		
 		Log.d(LOG_TAG, "answered question " + displayedQuestionId
 				+ " correkt? " + isAllCorrect);
 	}
