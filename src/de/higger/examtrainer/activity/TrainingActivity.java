@@ -1,6 +1,7 @@
 package de.higger.examtrainer.activity;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +31,24 @@ import de.higger.examtrainer.vo.Question;
 import de.higger.examtrainer.vo.QuestionList;
 
 public class TrainingActivity extends Activity {
+	private class AnswersList implements Serializable {
+		private static final long serialVersionUID = -5106943390126991743L;
+
+		public AnswersList(List<Answer> displayedAnswers) {
+			super();
+			this.displayedAnswers = displayedAnswers;
+		}
+
+		private List<Answer> displayedAnswers;
+
+		public List<Answer> getDisplayedAnswers() {
+			return displayedAnswers;
+		}
+	}
+
+	private static final String SAVE_PARAM_DISPLAYED_QUESTION = "SAVE_PARAM_DISPLAYED_QUESTION";
+	private static final String SAVE_PARAM_DISPLAYED_ANSWERS = "SAVE_PARAM_DISPLAYED_ANSWERS";
+
 	private final String LOG_TAG = Constants.LOG_TAG_PRE
 			+ getClass().getSimpleName();
 
@@ -37,13 +56,15 @@ public class TrainingActivity extends Activity {
 
 	private List<Question> allQuestions;
 
-	private int displayedQuestionId;
-	private List<Answer> displayedAnswers;
+	private Question displayedQuestion = null;
+	private List<Answer> displayedAnswers = null;
 
 	private QuestionResultDBService questionResultDBService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.v(LOG_TAG, "savedInstanceState");
+
 		super.onCreate(savedInstanceState);
 		initServices();
 
@@ -56,31 +77,49 @@ public class TrainingActivity extends Activity {
 
 		allQuestions = questionList.getQuestions();
 
-		showNextQuestion();
+		loadNextQuestion();
+		showQuestion();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putSerializable(SAVE_PARAM_DISPLAYED_QUESTION,
+				displayedQuestion);
+		outState.putSerializable(SAVE_PARAM_DISPLAYED_ANSWERS, new AnswersList(
+				displayedAnswers));
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		displayedQuestion = (Question) savedInstanceState
+				.get(SAVE_PARAM_DISPLAYED_QUESTION);
+		AnswersList answersList = (AnswersList) savedInstanceState
+				.get(SAVE_PARAM_DISPLAYED_ANSWERS);
+		displayedAnswers = answersList.getDisplayedAnswers();
+
+		showQuestion();
 	}
 
 	private void initServices() {
 		questionResultDBService = new QuestionResultDBService(this);
 	}
 
-	@SuppressWarnings("unchecked")
-	private void showNextQuestion() {
-		Question question = getNextQuestion();
-		displayedQuestionId = question.getId();
-
+	private void showQuestion() {
 		TextView textView = (TextView) findViewById(R.id.trn_text_question_text);
-		textView.setText(question.getQuestion());
+		textView.setText(displayedQuestion.getQuestion());
 
 		FrameLayout imageFrame = (FrameLayout) findViewById(R.id.trn_image_placeholder);
 		if (imageFrame.getChildCount() > 0) {
 			imageFrame.removeViewAt(0);
 		}
 
-		if (question.isImage()) {
+		if (displayedQuestion.isImage()) {
 			ImageView imageView = new ImageView(this);
 
 			final Uri imageUri = ActivityHelper.getImagePath(this,
-					question.getId());
+					displayedQuestion.getId());
 			imageView.setImageURI(imageUri);
 
 			imageView.setOnClickListener(new OnClickListener() {
@@ -101,9 +140,6 @@ public class TrainingActivity extends Activity {
 		TableLayout answersLayout = (TableLayout) findViewById(R.id.trn_answers_placeholder);
 		answersLayout.removeViewsInLayout(0, answersLayout.getChildCount());
 
-		displayedAnswers = getCopy(question.getAnswers());
-		Collections.shuffle(displayedAnswers);
-
 		for (Answer answer : displayedAnswers) {
 			TableRow answerRow = (TableRow) getLayoutInflater().inflate(
 					R.layout.training_answer_row, null);
@@ -112,6 +148,13 @@ public class TrainingActivity extends Activity {
 
 			answersLayout.addView(answerRow);
 		}
+	}
+
+	@SuppressWarnings({ "unchecked" })
+	private void loadNextQuestion() {
+		displayedQuestion = getNextQuestion();
+		displayedAnswers = getCopy(displayedQuestion.getAnswers());
+		Collections.shuffle(displayedAnswers);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -152,7 +195,8 @@ public class TrainingActivity extends Activity {
 		} else if (view.getId() == R.id.trn_btn_next) {
 			confirmButton.setEnabled(true);
 
-			showNextQuestion();
+			loadNextQuestion();
+			showQuestion();
 		}
 
 	}
@@ -179,12 +223,12 @@ public class TrainingActivity extends Activity {
 		}
 
 		if (isAllCorrect) {
-			questionResultDBService.addCorrect(displayedQuestionId);
+			questionResultDBService.addCorrect(displayedQuestion.getId());
 		} else {
-			questionResultDBService.addWrong(displayedQuestionId);
+			questionResultDBService.addWrong(displayedQuestion.getId());
 		}
 
-		Log.d(LOG_TAG, "answered question " + displayedQuestionId
+		Log.d(LOG_TAG, "answered question " + displayedQuestion.getId()
 				+ " correkt? " + isAllCorrect);
 	}
 
