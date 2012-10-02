@@ -24,6 +24,7 @@ public class ExamDBHelper extends SQLiteOpenHelper {
 		db.execSQL(QuestionDDL.CREATE_TABLE);
 		db.execSQL(AnswerDDL.CREATE_TABLE);
 		db.execSQL(QuestionResultDDL.CREATE_TABLE);
+		db.execSQL(ImageReferenceDDL.CREATE_TABLE);
 
 		Log.v(TAG, "Database created");
 	}

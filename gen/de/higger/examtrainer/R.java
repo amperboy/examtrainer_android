@@ -29,6 +29,7 @@ public final class R {
         public static final int chose_exam=0x7f030000;
         public static final int main=0x7f030001;
         public static final int training=0x7f030002;
+        public static final int training_answer_row=0x7f030003;
     }
     public static final class menu {
         public static final int exam_menu=0x7f050000;

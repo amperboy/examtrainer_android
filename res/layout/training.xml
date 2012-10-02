@@ -11,6 +11,7 @@
         android:orientation="vertical" >
 
         <!-- question text -->
+
         <TextView
             android:id="@+id/trn_text_question_text"
             android:layout_width="match_parent"
@@ -19,6 +20,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <!-- to fill with image -->
+
         <FrameLayout
             android:id="@+id/trn_image_placeholder"
             android:layout_width="match_parent"
@@ -26,15 +28,16 @@
         </FrameLayout>
 
         <!-- To fill with answers -->
+
         <TableLayout
             android:id="@+id/trn_answers_placeholder"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
         </TableLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:orientation="vertical" >

@@ -79,9 +79,8 @@ public class TrainingActivity extends Activity {
 		if (question.isImage()) {
 			ImageView imageView = new ImageView(this);
 
-			File filesDir = getFilesDir();
-			final Uri imageUri = Uri.parse(filesDir.getAbsolutePath()
-					+ "/Geocaching_Logo.jpg");
+			final Uri imageUri = ActivityHelper.getImagePath(this,
+					question.getId());
 			imageView.setImageURI(imageUri);
 
 			imageView.setOnClickListener(new OnClickListener() {
@@ -106,14 +105,10 @@ public class TrainingActivity extends Activity {
 		Collections.shuffle(displayedAnswers);
 
 		for (Answer answer : displayedAnswers) {
-			TableRow answerRow = new TableRow(this);
-
-			CheckBox isCorrect = new CheckBox(this);
-			answerRow.addView(isCorrect);
-
-			TextView answerText = new TextView(this);
+			TableRow answerRow = (TableRow) getLayoutInflater().inflate(
+					R.layout.training_answer_row, null);
+			TextView answerText = (TextView) answerRow.getChildAt(1);
 			answerText.setText(answer.getAnswer());
-			answerRow.addView(answerText);
 
 			answersLayout.addView(answerRow);
 		}

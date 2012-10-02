@@ -1,10 +1,12 @@
 package de.higger.examtrainer.activity;
 
+import java.io.File;
 import java.util.List;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,10 +23,12 @@ import de.higger.examtrainer.R;
 import de.higger.examtrainer.TrainingMode;
 import de.higger.examtrainer.db.service.AnswerDBService;
 import de.higger.examtrainer.db.service.ExamDBService;
+import de.higger.examtrainer.db.service.ImageReferenceDBService;
 import de.higger.examtrainer.db.service.QuestionDBService;
 import de.higger.examtrainer.exception.WSRequestFailedException;
 import de.higger.examtrainer.vo.Answer;
 import de.higger.examtrainer.vo.Exam;
+import de.higger.examtrainer.vo.ImageReference;
 import de.higger.examtrainer.vo.Question;
 import de.higger.examtrainer.vo.QuestionList;
 import de.higger.examtrainer.webservice.ExamWebService;
@@ -66,6 +70,7 @@ public class ChoseExamActivity extends Activity {
 	private ExamDBService examDBService;
 	private QuestionDBService questionDBService;
 	private AnswerDBService answerDBService;
+	private ImageReferenceDBService imageReferenceDBService;
 
 	private ExamWebService examWebService;
 	private QuestionWebService questionWebService;
@@ -104,6 +109,7 @@ public class ChoseExamActivity extends Activity {
 		examDBService = new ExamDBService(this);
 		questionDBService = new QuestionDBService(this);
 		answerDBService = new AnswerDBService(this);
+		imageReferenceDBService = new ImageReferenceDBService(this);
 
 		examWebService = new ExamWebService(this);
 		questionWebService = new QuestionWebService(this);
@@ -142,7 +148,7 @@ public class ChoseExamActivity extends Activity {
 					getText(R.string.choseexam_exams_load_error),
 					Toast.LENGTH_SHORT);
 			toast.show();
-			Log.e(LOG_TAG, "exams coundn't load", e);
+			Log.w(LOG_TAG, "exams coundn't load", e);
 		}
 	}
 
@@ -293,7 +299,8 @@ public class ChoseExamActivity extends Activity {
 
 				Log.v(LOG_TAG, "added " + i + " questions and " + k
 						+ " answers");
-//				answerDBService.removeUnassignedAnswers();
+
+				removeUnassignedImages();
 
 			}
 		} catch (WSRequestFailedException e) {
@@ -301,8 +308,30 @@ public class ChoseExamActivity extends Activity {
 					getText(R.string.choseexam_questions_load_error),
 					Toast.LENGTH_SHORT);
 			toast.show();
-			Log.e(LOG_TAG, "question coundn't received", e);
+			Log.w(LOG_TAG, "question coundn't received", e);
 		}
+	}
+
+	private void removeUnassignedImages() {
+		List<ImageReference> imageReferences = imageReferenceDBService
+				.getUnassignedImageReferences();
+
+		int k = 0;
+		for (ImageReference imageReference : imageReferences) {
+			final Uri imageUri = ActivityHelper.getImagePath(this,
+					imageReference.getImageId());
+			File f = new File(imageUri.toString());
+			if (f.exists()) {
+				f.delete();
+				k++;
+			}
+		}
+
+		Log.d(LOG_TAG, k + " image files removed");
+
+		imageReferenceDBService
+				.removeUnassignedImageReferences(imageReferences);
+
 	}
 
 }
