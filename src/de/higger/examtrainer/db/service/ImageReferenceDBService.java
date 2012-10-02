@@ -3,6 +3,7 @@ package de.higger.examtrainer.db.service;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -35,7 +36,7 @@ public class ImageReferenceDBService {
 		List<ImageReference> unassigneImageReferences = new LinkedList<ImageReference>();
 		while (c.moveToNext()) {
 			ImageReference imageReference = new ImageReference();
-			imageReference.setImageId(c.getInt(0));
+			imageReference.setQuestionId(c.getInt(0));
 
 			unassigneImageReferences.add(imageReference);
 		}
@@ -58,7 +59,7 @@ public class ImageReferenceDBService {
 				imageIds.append(',');
 			}
 
-			imageIds.append(imageReference.getImageId());
+			imageIds.append(imageReference.getQuestionId());
 
 			i++;
 		}
@@ -69,5 +70,23 @@ public class ImageReferenceDBService {
 				new String[] { imageIds.toString() });
 		db.close();
 
+	}
+
+	public void remove(int questionId) {
+		SQLiteDatabase db = examDBHelper.getWritableDatabase();
+		db.delete(ImageReferenceDDL.TABLE_NAME,
+				ImageReferenceDDL.COLUMNNAME_QUESTION_ID + " = ? ",
+				new String[] { Integer.toString(questionId) });
+		db.close();
+	}
+
+	public void create(int questionId) {
+		SQLiteDatabase db = examDBHelper.getWritableDatabase();
+
+		ContentValues avalues = new ContentValues();
+		avalues.put(ImageReferenceDDL.COLUMNNAME_QUESTION_ID, questionId);
+
+		db.insert(ImageReferenceDDL.TABLE_NAME, null, avalues);
+		db.close();
 	}
 }

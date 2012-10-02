@@ -1,9 +1,7 @@
 package de.higger.examtrainer.activity;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -31,23 +29,7 @@ import de.higger.examtrainer.vo.Question;
 import de.higger.examtrainer.vo.QuestionList;
 
 public class TrainingActivity extends Activity {
-	private class AnswersList implements Serializable {
-		private static final long serialVersionUID = -5106943390126991743L;
-
-		public AnswersList(List<Answer> displayedAnswers) {
-			super();
-			this.displayedAnswers = displayedAnswers;
-		}
-
-		private List<Answer> displayedAnswers;
-
-		public List<Answer> getDisplayedAnswers() {
-			return displayedAnswers;
-		}
-	}
-
 	private static final String SAVE_PARAM_DISPLAYED_QUESTION = "SAVE_PARAM_DISPLAYED_QUESTION";
-	private static final String SAVE_PARAM_DISPLAYED_ANSWERS = "SAVE_PARAM_DISPLAYED_ANSWERS";
 
 	private final String LOG_TAG = Constants.LOG_TAG_PRE
 			+ getClass().getSimpleName();
@@ -57,14 +39,11 @@ public class TrainingActivity extends Activity {
 	private List<Question> allQuestions;
 
 	private Question displayedQuestion = null;
-	private List<Answer> displayedAnswers = null;
 
 	private QuestionResultDBService questionResultDBService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.v(LOG_TAG, "savedInstanceState");
-
 		super.onCreate(savedInstanceState);
 		initServices();
 
@@ -85,8 +64,6 @@ public class TrainingActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putSerializable(SAVE_PARAM_DISPLAYED_QUESTION,
 				displayedQuestion);
-		outState.putSerializable(SAVE_PARAM_DISPLAYED_ANSWERS, new AnswersList(
-				displayedAnswers));
 		super.onSaveInstanceState(outState);
 	}
 
@@ -95,9 +72,6 @@ public class TrainingActivity extends Activity {
 		super.onRestoreInstanceState(savedInstanceState);
 		displayedQuestion = (Question) savedInstanceState
 				.get(SAVE_PARAM_DISPLAYED_QUESTION);
-		AnswersList answersList = (AnswersList) savedInstanceState
-				.get(SAVE_PARAM_DISPLAYED_ANSWERS);
-		displayedAnswers = answersList.getDisplayedAnswers();
 
 		showQuestion();
 	}
@@ -140,7 +114,7 @@ public class TrainingActivity extends Activity {
 		TableLayout answersLayout = (TableLayout) findViewById(R.id.trn_answers_placeholder);
 		answersLayout.removeViewsInLayout(0, answersLayout.getChildCount());
 
-		for (Answer answer : displayedAnswers) {
+		for (Answer answer : displayedQuestion.getAnswers()) {
 			TableRow answerRow = (TableRow) getLayoutInflater().inflate(
 					R.layout.training_answer_row, null);
 			TextView answerText = (TextView) answerRow.getChildAt(1);
@@ -150,22 +124,9 @@ public class TrainingActivity extends Activity {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked" })
 	private void loadNextQuestion() {
 		displayedQuestion = getNextQuestion();
-		displayedAnswers = getCopy(displayedQuestion.getAnswers());
-		Collections.shuffle(displayedAnswers);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private List getCopy(List src) {
-		List copy = new LinkedList();
-
-		for (Object obj : src) {
-			copy.add(obj);
-		}
-
-		return copy;
+		Collections.shuffle(displayedQuestion.getAnswers());
 	}
 
 	private Question getNextQuestion() {
@@ -206,7 +167,7 @@ public class TrainingActivity extends Activity {
 
 		boolean isAllCorrect = true;
 		int i = 0;
-		for (Answer answer : displayedAnswers) {
+		for (Answer answer : displayedQuestion.getAnswers()) {
 			TableRow answerRow = (TableRow) answersLayout.getChildAt(i);
 			CheckBox answerCheckBox = (CheckBox) answerRow.getChildAt(0);
 			answerCheckBox.setEnabled(false);

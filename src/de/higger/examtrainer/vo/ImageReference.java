@@ -1,13 +1,17 @@
 package de.higger.examtrainer.vo;
 
-public class ImageReference {
-	private int imageId;
+import java.io.Serializable;
 
-	public int getImageId() {
-		return imageId;
+public class ImageReference implements Serializable {
+	private static final long serialVersionUID = -6595155949609790389L;
+
+	private int questionId;
+
+	public int getQuestionId() {
+		return questionId;
 	}
 
-	public void setImageId(int imageId) {
-		this.imageId = imageId;
+	public void setQuestionId(int questionId) {
+		this.questionId = questionId;
 	}
 }

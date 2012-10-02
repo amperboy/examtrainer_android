@@ -1,6 +1,7 @@
 package de.higger.examtrainer.activity;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 import android.app.Activity;
@@ -26,6 +27,7 @@ import de.higger.examtrainer.db.service.ExamDBService;
 import de.higger.examtrainer.db.service.ImageReferenceDBService;
 import de.higger.examtrainer.db.service.QuestionDBService;
 import de.higger.examtrainer.exception.WSRequestFailedException;
+import de.higger.examtrainer.tool.ImageDownloader;
 import de.higger.examtrainer.vo.Answer;
 import de.higger.examtrainer.vo.Exam;
 import de.higger.examtrainer.vo.ImageReference;
@@ -284,10 +286,16 @@ public class ChoseExamActivity extends Activity {
 			if (questions.size() > 0) {
 				questionDBService.removeQuestions(examId);
 
+				List<Question> questionsWithImage = new LinkedList<Question>();
+
 				int i = 0;
 				int k = 0;
 				for (Question question : questions) {
 					questionDBService.createQuestion(examId, question);
+
+					if (question.isImage()) {
+						questionsWithImage.add(question);
+					}
 
 					for (Answer answer : question.getAnswers()) {
 						answerDBService.createAnswer(question.getId(), answer);
@@ -295,6 +303,19 @@ public class ChoseExamActivity extends Activity {
 					}
 
 					i++;
+				}
+
+				ImageDownloader imageDownloader = new ImageDownloader(this);
+				
+				for (Question question : questionsWithImage) {
+					removeImageFile(question.getId());
+					imageReferenceDBService.remove(question.getId());
+
+					final Uri imageUri = ActivityHelper.getImagePath(this,
+							question.getId());
+					File target = new File(imageUri.toString());
+					imageDownloader.saveImage(question.getId(), target);
+					imageReferenceDBService.create(question.getId());
 				}
 
 				Log.v(LOG_TAG, "added " + i + " questions and " + k
@@ -316,22 +337,21 @@ public class ChoseExamActivity extends Activity {
 		List<ImageReference> imageReferences = imageReferenceDBService
 				.getUnassignedImageReferences();
 
-		int k = 0;
 		for (ImageReference imageReference : imageReferences) {
-			final Uri imageUri = ActivityHelper.getImagePath(this,
-					imageReference.getImageId());
-			File f = new File(imageUri.toString());
-			if (f.exists()) {
-				f.delete();
-				k++;
-			}
+			removeImageFile(imageReference.getQuestionId());
 		}
-
-		Log.d(LOG_TAG, k + " image files removed");
 
 		imageReferenceDBService
 				.removeUnassignedImageReferences(imageReferences);
 
+	}
+
+	private void removeImageFile(int questionId) {
+		final Uri imageUri = ActivityHelper.getImagePath(this, questionId);
+		File f = new File(imageUri.toString());
+		if (f.exists()) {
+			f.delete();
+		}
 	}
 
 }

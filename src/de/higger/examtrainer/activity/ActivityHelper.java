@@ -9,7 +9,7 @@ public class ActivityHelper {
 	public static Uri getImagePath(Activity activity, int questionId) {
 		File filesDir = activity.getFilesDir();
 		final Uri imageUri = Uri.parse(filesDir.getAbsolutePath()
-				+ "/question_image_" + questionId + ".jpg");
+				+ "/question_image_" + questionId + ".mgi");
 
 		return imageUri;
 	}
