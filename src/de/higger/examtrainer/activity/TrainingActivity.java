@@ -115,10 +115,21 @@ public class TrainingActivity extends Activity {
 		answersLayout.removeViewsInLayout(0, answersLayout.getChildCount());
 
 		for (Answer answer : displayedQuestion.getAnswers()) {
-			TableRow answerRow = (TableRow) getLayoutInflater().inflate(
+			final TableRow answerRow = (TableRow) getLayoutInflater().inflate(
 					R.layout.training_answer_row, null);
 			TextView answerText = (TextView) answerRow.getChildAt(1);
 			answerText.setText(answer.getAnswer());
+
+			answerRow.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					CheckBox answerCheckBox = (CheckBox) answerRow
+							.getChildAt(0);
+					boolean newState = !answerCheckBox.isChecked();
+					answerCheckBox.setChecked(newState);
+				}
+			});
 
 			answersLayout.addView(answerRow);
 		}
@@ -174,10 +185,16 @@ public class TrainingActivity extends Activity {
 
 			TextView answerText = (TextView) answerRow.getChildAt(1);
 
-			if (answerCheckBox.isChecked() != answer.isCorrect()) {
+			if (answerCheckBox.isChecked() == true
+					&& answer.isCorrect() == false) {
 				answerText.setTextColor(Color.RED);
 				isAllCorrect = false;
-			} else if (answerCheckBox.isChecked()) {
+			} else if (answerCheckBox.isChecked() == false
+					&& answer.isCorrect() == true) {
+				answerText.setTextColor(Color.BLUE);
+				isAllCorrect = false;
+			} else if (answerCheckBox.isChecked() == true
+					&& answer.isCorrect() == true) {
 				answerText.setTextColor(Color.GREEN);
 			}
 			i++;
