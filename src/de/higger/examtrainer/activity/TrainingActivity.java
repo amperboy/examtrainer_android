@@ -126,8 +126,10 @@ public class TrainingActivity extends Activity {
 				public void onClick(View v) {
 					CheckBox answerCheckBox = (CheckBox) answerRow
 							.getChildAt(0);
-					boolean newState = !answerCheckBox.isChecked();
-					answerCheckBox.setChecked(newState);
+					if (answerCheckBox.isEnabled()) {
+						boolean newState = !answerCheckBox.isChecked();
+						answerCheckBox.setChecked(newState);
+					}
 				}
 			});
 
@@ -197,6 +199,10 @@ public class TrainingActivity extends Activity {
 					&& answer.isCorrect() == true) {
 				answerText.setTextColor(Color.GREEN);
 			}
+			
+			answerRow.setOnClickListener(null);
+			answerRow.setClickable(false);
+			
 			i++;
 		}
 
