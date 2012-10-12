@@ -1,6 +1,5 @@
 package de.higger.examtrainer.db.service;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -25,16 +24,49 @@ public class QuestionDBService {
 
 	public QuestionDBService(Context context) {
 		examDBHelper = new ExamDBHelper(context);
-
 		answerDBService = new AnswerDBService(context);
 	}
 
-	public int count(int examId) {
-		//FIXME implement!
-		
-		return 0;
+	public int getCount(int examId) {
+		StringBuilder queryString = new StringBuilder("SELECT count(*) FROM ");
+		queryString.append(QuestionDDL.TABLE_NAME);
+		queryString.append(" WHERE ").append(QuestionDDL.COLUMNNAME_ID);
+		queryString.append(" = ?");
+
+		String sExamId = Integer.toString(examId);
+		SQLiteDatabase db = examDBHelper.getReadableDatabase();
+		Cursor mCount = db.rawQuery(queryString.toString(),
+				new String[] { sExamId });
+
+		mCount.moveToFirst();
+		int count = mCount.getInt(0);
+		db.close();
+		mCount.close();
+
+		return count;
 	}
-	
+
+	public Question getRandomQuestion(int examId) {
+		StringBuilder queryString = new StringBuilder("SELECT ")
+				.append(QuestionDDL.COLUMNNAME_ID).append(" FROM ")
+				.append(QuestionDDL.TABLE_NAME).append(" WHERE ")
+				.append(QuestionDDL.COLUMNNAME_EXAM_ID)
+				.append(" = ? ORDER BY RANDOM() LIMIT 1;");
+
+		String sExamId = Integer.toString(examId);
+		SQLiteDatabase db = examDBHelper.getReadableDatabase();
+		Cursor mCount = db.rawQuery(queryString.toString(),
+				new String[] { sExamId });
+		mCount.moveToFirst();
+		int questionId = mCount.getInt(0);
+		db.close();
+		mCount.close();
+
+		Log.v(LOG_TAG, "random question id: " + questionId);
+
+		return getQuestion(questionId);
+	}
+
 	public Question getPreferedQuestion(int examId) {
 		StringBuilder queryString = new StringBuilder("SELECT ");
 		queryString.append(QuestionDDL.COLUMNNAME_ID);
@@ -42,9 +74,7 @@ public class QuestionDBService {
 		queryString.append(QuestionDDL.TABLE_NAME);
 		queryString.append(" where ");
 		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
-		queryString.append(" = ");
-		queryString.append(examId);
-		queryString.append(" and ");
+		queryString.append(" = ? and ");
 		queryString.append(QuestionDDL.COLUMNNAME_ID);
 		queryString.append(" not in (SELECT distinct ");
 		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
@@ -58,9 +88,7 @@ public class QuestionDBService {
 		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
 		queryString.append(" and q.");
 		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
-		queryString.append(" = ");
-		queryString.append(examId);
-		queryString.append(" ) union select ");
+		queryString.append(" = ?) union select ");
 		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
 		queryString.append(" , (");
 		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
@@ -86,9 +114,7 @@ public class QuestionDBService {
 		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
 		queryString.append(" and q.");
 		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
-		queryString.append(" = ");
-		queryString.append(examId);
-		queryString.append(")) wtg from ");
+		queryString.append(" = ?)) wtg from ");
 		queryString.append(QuestionResultDDL.TABLE_NAME);
 		queryString.append(" qr, ");
 		queryString.append(QuestionDDL.TABLE_NAME);
@@ -98,41 +124,42 @@ public class QuestionDBService {
 		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
 		queryString.append(" and q.");
 		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
-		queryString.append(" = ");
-		queryString.append(examId);
-		queryString.append(" order by 2 desc");
+		queryString.append(" = ? order by 2 desc");
 
-		System.out.println(queryString.toString());
-		//FIXME implement!
+		String sExamId = Integer.toString(examId);
+		SQLiteDatabase db = examDBHelper.getReadableDatabase();
+		Cursor mCount = db.rawQuery(queryString.toString(), new String[] {
+				sExamId, sExamId, sExamId, sExamId });
+		mCount.moveToFirst();
+		int questionId = mCount.getInt(0);
+		db.close();
+		mCount.close();
 
-		return null;
+		Log.v(LOG_TAG, "optimized question id: " + questionId);
+
+		return getQuestion(questionId);
 	}
 
-	public List<Question> getQuestions(int examId) {
+	public Question getQuestion(int questionId) {
 		SQLiteDatabase db = examDBHelper.getReadableDatabase();
 		Cursor c = db.query(QuestionDDL.TABLE_NAME, new String[] {
 				QuestionDDL.COLUMNNAME_ID, QuestionDDL.COLUMNNAME_QUESTION,
-				QuestionDDL.COLUMNNAME_HAS_IMAGE },
-				QuestionDDL.COLUMNNAME_EXAM_ID + " = ?",
-				new String[] { Integer.toString(examId) }, null, null, null);
+				QuestionDDL.COLUMNNAME_HAS_IMAGE }, QuestionDDL.COLUMNNAME_ID
+				+ " = ?", new String[] { Integer.toString(questionId) }, null,
+				null, null);
 
-		List<Question> questions = new LinkedList<Question>();
-		while (c.moveToNext()) {
-			Question question = new Question();
+		c.moveToFirst();
+		Question question = new Question();
 
-			int questionId = c.getInt(0);
-			question.setId(questionId);
-			question.setQuestion(c.getString(1));
-			question.setImage(c.getShort(2) == 1 ? true : false);
-
-			List<Answer> answers = answerDBService.getAnswers(questionId);
-			question.setAnswers(answers);
-
-			questions.add(question);
-		}
+		question.setId(questionId);
+		question.setQuestion(c.getString(1));
+		question.setImage(c.getShort(2) == 1 ? true : false);
 		db.close();
 
-		return questions;
+		List<Answer> answers = answerDBService.getAnswers(questionId);
+		question.setAnswers(answers);
+
+		return question;
 	}
 
 	public void removeQuestions(int examId) {

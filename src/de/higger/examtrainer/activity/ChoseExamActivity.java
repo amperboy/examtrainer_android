@@ -32,7 +32,6 @@ import de.higger.examtrainer.vo.Answer;
 import de.higger.examtrainer.vo.Exam;
 import de.higger.examtrainer.vo.ImageReference;
 import de.higger.examtrainer.vo.Question;
-import de.higger.examtrainer.vo.QuestionList;
 import de.higger.examtrainer.webservice.ExamWebService;
 import de.higger.examtrainer.webservice.QuestionWebService;
 
@@ -62,7 +61,7 @@ public class ChoseExamActivity extends Activity {
 	}
 
 	public static final String EXTRA_TRAINING_MODE = "TRAINING_MODE";
-	public static final String EXTRA_TRAINING_QUESTIONS = "TRAINING_QUESTIONS";
+	public static final String EXTRA_TRAINING_EXAM_ID = "TRAINING_EXAM_ID";
 
 	private final String LOG_TAG = Constants.LOG_TAG_PRE
 			+ getClass().getSimpleName();
@@ -224,34 +223,29 @@ public class ChoseExamActivity extends Activity {
 		final ToggleButton refreshExam = (ToggleButton) findViewById(R.id.choseexam_btn_refresh_exam);
 		final Exam selectedExam = (Exam) spinner.getSelectedItem();
 
-		AsyncTask<Void, Void, List<Question>> asyncTask = new BusyAsynchTask<Void, Void, List<Question>>() {
+		AsyncTask<Void, Void, Integer> asyncTask = new BusyAsynchTask<Void, Void, Integer>() {
 			@Override
-			protected List<Question> doInBackground(Void... voids) {
+			protected Integer doInBackground(Void... voids) {
 				int examId = selectedExam.getId();
 
-				if (refreshExam.isChecked()) {
-					Log.d(LOG_TAG, "trigger questions update");
+				if(refreshExam.isChecked() || questionDBService.getCount(examId) == 0) {
+					Log.d(LOG_TAG, "update questions");
 					updateQuestionsInDatabase(examId);
-
-					return questionDBService.getQuestions(examId);
-				} else {
-					return retrieveAllQuestions(examId);
 				}
+				
+				return questionDBService.getCount(examId);
 			}
 
 			@Override
-			protected void onExecuteComplete(List<Question> questions) {
-				if (questions.size() > 0) {
+			protected void onExecuteComplete(Integer size) {
+				if (size.intValue() > 0) {
 					Log.d(LOG_TAG, "send intent to start training");
-					QuestionList questionList = new QuestionList();
-					questionList.setQuestions(questions);
+					int examId = selectedExam.getId();
 
 					Intent intent = new Intent(ChoseExamActivity.this,
 							TrainingActivity.class);
-					intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE,
-							trainingMode);
-					intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_QUESTIONS,
-							questionList);
+					intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE,	trainingMode);
+					intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_EXAM_ID, examId);
 					startActivity(intent);
 				} else {
 					Log.d(LOG_TAG, "no questions available to start training");
@@ -268,15 +262,6 @@ public class ChoseExamActivity extends Activity {
 
 	}
 
-	private List<Question> retrieveAllQuestions(int examId) {
-		List<Question> questions = questionDBService.getQuestions(examId);
-
-		if (questions.size() == 0) {
-			updateQuestionsInDatabase(examId);
-			questions = questionDBService.getQuestions(examId);
-		}
-		return questions;
-	}
 
 	private void updateQuestionsInDatabase(int examId) {
 		try {
@@ -306,7 +291,7 @@ public class ChoseExamActivity extends Activity {
 				}
 
 				ImageDownloader imageDownloader = new ImageDownloader(this);
-				
+
 				for (Question question : questionsWithImage) {
 					removeImageFile(question.getId());
 					imageReferenceDBService.remove(question.getId());
@@ -322,7 +307,6 @@ public class ChoseExamActivity extends Activity {
 						+ " answers");
 
 				removeUnassignedImages();
-
 			}
 		} catch (WSRequestFailedException e) {
 			Toast toast = Toast.makeText(getApplicationContext(),

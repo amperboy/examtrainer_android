@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 import de.higger.examtrainer.R;
 import de.higger.examtrainer.TrainingMode;
+import de.higger.examtrainer.db.service.QuestionResultDBService;
 
 public class MainActivity extends Activity {
 	/** Called when the activity is first created. */
@@ -17,7 +19,26 @@ public class MainActivity extends Activity {
 
 	public void runRandomTrainer(View view) {
 		Intent intent = new Intent(this, ChoseExamActivity.class);
-		intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE, TrainingMode.RANDOM);
+		intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE,
+				TrainingMode.RANDOM);
 		startActivity(intent);
+	}
+
+	public void runOptTrainer(View view) {
+		Intent intent = new Intent(this, ChoseExamActivity.class);
+		intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE,
+				TrainingMode.OPTIMIZED);
+		startActivity(intent);
+	}
+
+	public void clearStatistic(View view) {
+		QuestionResultDBService questionResultDBService = new QuestionResultDBService(
+				this);
+		questionResultDBService.clearStatistic();
+		
+		Toast toast = Toast.makeText(getApplicationContext(),
+				getText(R.string.main_statistic_cleared),
+				Toast.LENGTH_SHORT);
+		toast.show();
 	}
 }

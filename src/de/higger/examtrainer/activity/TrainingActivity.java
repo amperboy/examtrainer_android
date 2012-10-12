@@ -2,8 +2,6 @@ package de.higger.examtrainer.activity;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,10 +21,10 @@ import android.widget.TextView;
 import de.higger.examtrainer.Constants;
 import de.higger.examtrainer.R;
 import de.higger.examtrainer.TrainingMode;
+import de.higger.examtrainer.db.service.QuestionDBService;
 import de.higger.examtrainer.db.service.QuestionResultDBService;
 import de.higger.examtrainer.vo.Answer;
 import de.higger.examtrainer.vo.Question;
-import de.higger.examtrainer.vo.QuestionList;
 
 public class TrainingActivity extends Activity {
 	private static final String SAVE_PARAM_DISPLAYED_QUESTION = "SAVE_PARAM_DISPLAYED_QUESTION";
@@ -36,11 +34,12 @@ public class TrainingActivity extends Activity {
 
 	private TrainingMode trainingMode;
 
-	private List<Question> allQuestions;
-
 	private Question displayedQuestion = null;
 
 	private QuestionResultDBService questionResultDBService;
+	private QuestionDBService questionDBService;
+
+	private Integer selectedExamId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +48,10 @@ public class TrainingActivity extends Activity {
 
 		trainingMode = (TrainingMode) getIntent().getExtras().get(
 				ChoseExamActivity.EXTRA_TRAINING_MODE);
-		QuestionList questionList = (QuestionList) getIntent().getExtras().get(
-				ChoseExamActivity.EXTRA_TRAINING_QUESTIONS);
+		selectedExamId = (Integer) getIntent().getExtras().get(
+				ChoseExamActivity.EXTRA_TRAINING_EXAM_ID);
 
 		setContentView(R.layout.training);
-
-		allQuestions = questionList.getQuestions();
 
 		loadNextQuestion();
 		showQuestion();
@@ -78,6 +75,7 @@ public class TrainingActivity extends Activity {
 
 	private void initServices() {
 		questionResultDBService = new QuestionResultDBService(this);
+		questionDBService = new QuestionDBService(this);
 	}
 
 	private void showQuestion() {
@@ -143,16 +141,15 @@ public class TrainingActivity extends Activity {
 	}
 
 	private Question getNextQuestion() {
-		if (trainingMode.equals(TrainingMode.RANDOM)) {
-			int amountQuestions = allQuestions.size();
-			Random random = new Random();
-			int questionIndex = random.nextInt(amountQuestions);
-			Question question = allQuestions.get(questionIndex);
+		Question question = null;
 
-			return question;
+		if (trainingMode.equals(TrainingMode.RANDOM)) {
+			question = questionDBService.getRandomQuestion(selectedExamId);
+		} else if (trainingMode.equals(TrainingMode.OPTIMIZED)) {
+			question = questionDBService.getPreferedQuestion(selectedExamId);
 		}
 
-		return null;
+		return question;
 	}
 
 	public void clickContinue(View view) {
@@ -199,10 +196,10 @@ public class TrainingActivity extends Activity {
 					&& answer.isCorrect() == true) {
 				answerText.setTextColor(Color.GREEN);
 			}
-			
+
 			answerRow.setOnClickListener(null);
 			answerRow.setClickable(false);
-			
+
 			i++;
 		}
 

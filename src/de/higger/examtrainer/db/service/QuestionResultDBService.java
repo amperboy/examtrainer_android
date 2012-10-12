@@ -109,4 +109,10 @@ public class QuestionResultDBService {
 				new String[] { Integer.toString(questionResult.getQuestionId()) });
 		db.close();
 	}
+
+	public void clearStatistic() {
+		SQLiteDatabase db = examDBHelper.getWritableDatabase();
+		db.delete(QuestionResultDDL.TABLE_NAME, null, null);
+		db.close();
+	}
 }
