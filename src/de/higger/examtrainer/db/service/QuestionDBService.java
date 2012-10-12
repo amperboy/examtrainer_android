@@ -12,6 +12,7 @@ import de.higger.examtrainer.Constants;
 import de.higger.examtrainer.db.ddl.ExamDBHelper;
 import de.higger.examtrainer.db.ddl.ExamDDL;
 import de.higger.examtrainer.db.ddl.QuestionDDL;
+import de.higger.examtrainer.db.ddl.QuestionResultDDL;
 import de.higger.examtrainer.vo.Answer;
 import de.higger.examtrainer.vo.Question;
 
@@ -26,6 +27,85 @@ public class QuestionDBService {
 		examDBHelper = new ExamDBHelper(context);
 
 		answerDBService = new AnswerDBService(context);
+	}
+
+	public int count(int examId) {
+		//FIXME implement!
+		
+		return 0;
+	}
+	
+	public Question getPreferedQuestion(int examId) {
+		StringBuilder queryString = new StringBuilder("SELECT ");
+		queryString.append(QuestionDDL.COLUMNNAME_ID);
+		queryString.append(" id_question, 2 wtg from ");
+		queryString.append(QuestionDDL.TABLE_NAME);
+		queryString.append(" where ");
+		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
+		queryString.append(" = ");
+		queryString.append(examId);
+		queryString.append(" and ");
+		queryString.append(QuestionDDL.COLUMNNAME_ID);
+		queryString.append(" not in (SELECT distinct ");
+		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
+		queryString.append(" from ");
+		queryString.append(QuestionResultDDL.TABLE_NAME);
+		queryString.append(" qr, ");
+		queryString.append(QuestionDDL.TABLE_NAME);
+		queryString.append(" q WHERE q.");
+		queryString.append(QuestionDDL.COLUMNNAME_ID);
+		queryString.append(" = qr.");
+		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
+		queryString.append(" and q.");
+		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
+		queryString.append(" = ");
+		queryString.append(examId);
+		queryString.append(" ) union select ");
+		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
+		queryString.append(" , (");
+		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
+		queryString.append(" / (");
+		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_CORRECT);
+		queryString.append(" + ");
+		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
+		queryString.append(")) + 1 - ((");
+		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_CORRECT);
+		queryString.append(" + ");
+		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
+		queryString.append(") / ( select sum(");
+		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_CORRECT);
+		queryString.append(") + sum(");
+		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
+		queryString.append(") gesamt from ");
+		queryString.append(QuestionResultDDL.TABLE_NAME);
+		queryString.append(" qr, ");
+		queryString.append(QuestionDDL.TABLE_NAME);
+		queryString.append(" q WHERE q.");
+		queryString.append(QuestionDDL.COLUMNNAME_ID);
+		queryString.append(" = qr.");
+		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
+		queryString.append(" and q.");
+		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
+		queryString.append(" = ");
+		queryString.append(examId);
+		queryString.append(")) wtg from ");
+		queryString.append(QuestionResultDDL.TABLE_NAME);
+		queryString.append(" qr, ");
+		queryString.append(QuestionDDL.TABLE_NAME);
+		queryString.append(" q WHERE q.");
+		queryString.append(QuestionDDL.COLUMNNAME_ID);
+		queryString.append(" = qr.");
+		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
+		queryString.append(" and q.");
+		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
+		queryString.append(" = ");
+		queryString.append(examId);
+		queryString.append(" order by 2 desc");
+
+		System.out.println(queryString.toString());
+		//FIXME implement!
+
+		return null;
 	}
 
 	public List<Question> getQuestions(int examId) {
@@ -69,7 +149,7 @@ public class QuestionDBService {
 				+ ExamDDL.COLUMNNAME_ID + " FROM " + ExamDDL.TABLE_NAME + ");";
 		db.execSQL(query);
 		db.close();
-		
+
 		Log.v(LOG_TAG, "all unassigned questions removed");
 	}
 
