@@ -42,13 +42,17 @@
             android:layout_gravity="bottom"
             android:orientation="vertical" >
 
+            
+            
             <Button
                 android:id="@+id/trn_btn_confirm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="true"
                 android:onClick="clickContinue"
-                android:text="@string/confirm_answer" />
+                android:text="@string/confirm_answer" 
+                android:layout_marginTop="10dip"
+                />
 
             <Button
                 android:id="@+id/trn_btn_next"

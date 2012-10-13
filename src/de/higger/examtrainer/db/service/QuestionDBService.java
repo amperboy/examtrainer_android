@@ -30,7 +30,7 @@ public class QuestionDBService {
 	public int getCount(int examId) {
 		StringBuilder queryString = new StringBuilder("SELECT count(*) FROM ");
 		queryString.append(QuestionDDL.TABLE_NAME);
-		queryString.append(" WHERE ").append(QuestionDDL.COLUMNNAME_ID);
+		queryString.append(" WHERE ").append(QuestionDDL.COLUMNNAME_EXAM_ID);
 		queryString.append(" = ?");
 
 		String sExamId = Integer.toString(examId);
@@ -72,7 +72,7 @@ public class QuestionDBService {
 	public Question getPreferedQuestion(int examId) {
 		StringBuilder queryString = new StringBuilder("SELECT ");
 		queryString.append(QuestionDDL.COLUMNNAME_ID);
-		queryString.append(" id_question, 3.0 wtg from ");
+		queryString.append(" id_question, 2.0 wtg from ");
 		queryString.append(QuestionDDL.TABLE_NAME);
 		queryString.append(" where ");
 		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
@@ -92,21 +92,21 @@ public class QuestionDBService {
 		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
 		queryString.append(" = ?) union select ");
 		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
-		queryString.append(" , (");
+		queryString.append(" , (cast(");
 		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
-		queryString.append(" / (");
+		queryString.append(" as REAL) / (cast(");
 		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_CORRECT);
-		queryString.append(" + ");
+		queryString.append(" as REAL) + cast(");
 		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
-		queryString.append(")) + 1 - ((");
+		queryString.append(" as REAL))) + 1 - ((cast(");
 		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_CORRECT);
-		queryString.append(" + ");
+		queryString.append(" as REAL) + cast(");
 		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
-		queryString.append(") / ( select sum(");
+		queryString.append(" as REAL)) / ( select sum(cast(");
 		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_CORRECT);
-		queryString.append(") + sum(");
+		queryString.append(" as REAL)) + sum(cast(");
 		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
-		queryString.append(") gesamt from ");
+		queryString.append(" as REAL)) gesamt from ");
 		queryString.append(QuestionResultDDL.TABLE_NAME);
 		queryString.append(" qr, ");
 		queryString.append(QuestionDDL.TABLE_NAME);
