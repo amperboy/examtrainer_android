@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -79,6 +80,9 @@ public class TrainingActivity extends Activity {
 	}
 
 	private void showQuestion() {
+		ScrollView mainScrollView = (ScrollView) findViewById(R.id.trn_view_wrapper);
+		mainScrollView.fullScroll(ScrollView.FOCUS_UP);
+		
 		TextView textView = (TextView) findViewById(R.id.trn_text_question_text);
 		textView.setText(displayedQuestion.getQuestion());
 
