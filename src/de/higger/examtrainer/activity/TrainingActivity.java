@@ -86,6 +86,9 @@ public class TrainingActivity extends Activity {
 		if (imageFrame.getChildCount() > 0) {
 			imageFrame.removeViewAt(0);
 		}
+		
+		TextView descr = (TextView) findViewById(R.id.trn_desc);
+		descr.setText(displayedQuestion.getDesc());
 
 		if (displayedQuestion.isImage()) {
 			ImageView imageView = new ImageView(this);

@@ -21,10 +21,4 @@
         android:onClick="runOptTrainer"
         android:text="@string/main_btn_start_opttraining" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="clearStatistic"
-        android:text="@string/main_btn_clear_statistic" />
-
 </LinearLayout>

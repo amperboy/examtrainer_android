@@ -17,11 +17,14 @@ public final class R {
     public static final class id {
         public static final int choseexam_btn_refresh_exam=0x7f060001;
         public static final int choseexam_spn_exam=0x7f060000;
-        public static final int exam_menu_back=0x7f060009;
-        public static final int exam_menu_refresh=0x7f060008;
+        public static final int exam_menu_back=0x7f06000a;
+        public static final int exam_menu_refresh=0x7f060009;
+        public static final int main_menu_clear_stat=0x7f06000b;
+        public static final int main_menu_exit=0x7f06000c;
         public static final int trn_answers_placeholder=0x7f060005;
         public static final int trn_btn_confirm=0x7f060006;
         public static final int trn_btn_next=0x7f060007;
+        public static final int trn_desc=0x7f060008;
         public static final int trn_image_placeholder=0x7f060004;
         public static final int trn_text_question_text=0x7f060003;
         public static final int trn_view_wrapper=0x7f060002;
@@ -34,30 +37,32 @@ public final class R {
     }
     public static final class menu {
         public static final int exam_menu=0x7f050000;
+        public static final int main_menu=0x7f050001;
     }
     public static final class string {
         public static final int app_name=0x7f040003;
-        public static final int choseexam_btn_refresh_exam=0x7f04000a;
-        public static final int choseexam_btn_run_test=0x7f04000b;
-        public static final int choseexam_exams_load_error=0x7f04000e;
-        public static final int choseexam_exams_load_success=0x7f04000f;
-        public static final int choseexam_lbl_activity=0x7f040009;
-        public static final int choseexam_menu_back=0x7f04000d;
-        public static final int choseexam_menu_refresh=0x7f04000c;
-        public static final int choseexam_questions_load_error=0x7f040011;
-        public static final int choseexam_start_no_questions=0x7f040010;
-        public static final int confirm_answer=0x7f040014;
+        public static final int choseexam_btn_refresh_exam=0x7f04000b;
+        public static final int choseexam_btn_run_test=0x7f04000c;
+        public static final int choseexam_exams_load_error=0x7f04000f;
+        public static final int choseexam_exams_load_success=0x7f040010;
+        public static final int choseexam_lbl_activity=0x7f04000a;
+        public static final int choseexam_menu_back=0x7f04000e;
+        public static final int choseexam_menu_refresh=0x7f04000d;
+        public static final int choseexam_questions_load_error=0x7f040012;
+        public static final int choseexam_start_no_questions=0x7f040011;
+        public static final int confirm_answer=0x7f040015;
         public static final int constants_uri_ws_prefix=0x7f040002;
         public static final int constants_uri_ws_prefix_debug=0x7f040000;
         public static final int constants_uri_ws_prefix_live=0x7f040001;
-        public static final int main_btn_clear_statistic=0x7f040007;
         public static final int main_btn_start_opttraining=0x7f040006;
         public static final int main_btn_start_randtraining=0x7f040005;
         public static final int main_greeting=0x7f040004;
-        public static final int main_statistic_cleared=0x7f040008;
-        public static final int next_answer=0x7f040016;
-        public static final int progressdiaglog_default=0x7f040012;
-        public static final int training_default_question=0x7f040015;
-        public static final int training_lbl_activity=0x7f040013;
+        public static final int main_menu_clear_stat=0x7f040008;
+        public static final int main_menu_exit=0x7f040009;
+        public static final int main_statistic_cleared=0x7f040007;
+        public static final int next_answer=0x7f040017;
+        public static final int progressdiaglog_default=0x7f040013;
+        public static final int training_default_question=0x7f040016;
+        public static final int training_lbl_activity=0x7f040014;
     }
 }

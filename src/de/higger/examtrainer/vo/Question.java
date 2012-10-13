@@ -13,6 +13,8 @@ public class Question implements Serializable {
 	private boolean image;
 	private List<Answer> answers;
 
+	private String desc;
+
 	public int getId() {
 		return id;
 	}
@@ -45,10 +47,17 @@ public class Question implements Serializable {
 		this.answers = answers;
 	}
 
+	public String getDesc() {
+		return desc;
+	}
+	
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+	
 	@Override
 	public String toString() {
 		return "Question [id=" + id + ", question=" + getQuestion()
 				+ ", image=" + image + ", answers=" + answers + "]";
 	}
-
 }

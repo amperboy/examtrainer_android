@@ -57,6 +57,13 @@
                 android:enabled="false"
                 android:onClick="clickContinue"
                 android:text="@string/next_answer" />
+
+            <TextView
+                android:id="@+id/trn_desc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right" />
+
         </LinearLayout>
     </LinearLayout>
 

@@ -5,8 +5,9 @@
     <string name="main_greeting">Was möchsten Sie machen?</string>
     <string name="main_btn_start_randtraining">Zufallsfragen beantworten</string>
     <string name="main_btn_start_opttraining">Nötige Fragen beantworten</string>
-    <string name="main_btn_clear_statistic">Auswertungen löschen</string>
     <string name="main_statistic_cleared">Auswertungen gelöscht</string>
+    <string name="main_menu_clear_stat">Auswertungen löschen</string>
+    <string name="main_menu_exit">App beenden</string>
     
     <string name="choseexam_lbl_activity">Fragenkatalog auswählen</string>
     <string name="choseexam_btn_refresh_exam">Fragen im Katalog aktualisieren?</string>

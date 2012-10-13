@@ -64,13 +64,15 @@ public class QuestionDBService {
 
 		Log.v(LOG_TAG, "random question id: " + questionId);
 
-		return getQuestion(questionId);
+		Question question = getQuestion(questionId);
+		question.setDesc("(#" + questionId + ")");
+		return question;
 	}
 
 	public Question getPreferedQuestion(int examId) {
 		StringBuilder queryString = new StringBuilder("SELECT ");
 		queryString.append(QuestionDDL.COLUMNNAME_ID);
-		queryString.append(" id_question, 2 wtg from ");
+		queryString.append(" id_question, 3.0 wtg from ");
 		queryString.append(QuestionDDL.TABLE_NAME);
 		queryString.append(" where ");
 		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
@@ -132,12 +134,15 @@ public class QuestionDBService {
 				sExamId, sExamId, sExamId, sExamId });
 		mCount.moveToFirst();
 		int questionId = mCount.getInt(0);
+		double wtg = mCount.getDouble(1);
 		db.close();
 		mCount.close();
 
 		Log.v(LOG_TAG, "optimized question id: " + questionId);
 
-		return getQuestion(questionId);
+		Question question = getQuestion(questionId);
+		question.setDesc("(#" + questionId + ",wtg:" + wtg + ")");
+		return question;
 	}
 
 	public Question getQuestion(int questionId) {
