@@ -8,6 +8,7 @@
     <string name="main_statistic_cleared">Auswertungen gelöscht</string>
     <string name="main_menu_clear_stat">Auswertungen löschen</string>
     <string name="main_menu_exit">App beenden</string>
+    <string name="main_menu_settings">Einstellungen</string>
     
     <string name="choseexam_lbl_activity">Fragenkatalog auswählen</string>
     <string name="choseexam_btn_refresh_exam">Fragen im Katalog aktualisieren?</string>
@@ -25,4 +26,10 @@
     <string name="confirm_answer">Frage auswerten</string>
     <string name="training_default_question">-</string>
     <string name="next_answer">Weiter</string>
+    
+    <string name="settings_lbl_activity">Einstellungen</string>
+    <string name="stn_btn_save">Speichern</string>
+    <string name="webservice_url_hint">http://server/ws/</string>
+    <string name="stn_error_save_url">URL ist ungültig!</string>
+    <string name="stn_error_incompatible">WebService Version inkompatibel.</string>
 </resources>

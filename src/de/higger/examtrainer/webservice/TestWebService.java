@@ -1,35 +1,24 @@
 package de.higger.examtrainer.webservice;
 
 import java.util.HashMap;
-import java.util.List;
 
 import android.content.Context;
 
 import com.google.gson.Gson;
 
-import de.higger.examtrainer.R;
 import de.higger.examtrainer.exception.WSRequestFailedException;
 import de.higger.examtrainer.tool.WebService;
-import de.higger.examtrainer.vo.Exam;
+import de.higger.examtrainer.vo.Test;
 
-public class ExamWebService {
-	private class ExamsList {
-		private List<Exam> exams;
-
-		public List<Exam> getExams() {
-			return exams;
-		}
-	}
-
+public class TestWebService {
 	private WebService webService;
 
-	public ExamWebService(Context context) {
-		String url = context.getString(R.string.constants_uri_ws_prefix)
-				+ "get_exams.php";
+	public TestWebService(Context context, String webservicePrefix) {
+		String url = webservicePrefix + "test.html";
 		webService = new WebService(url);
 	}
 
-	public List<Exam> getExams() throws WSRequestFailedException {
+	public int receiveWSVersion() throws WSRequestFailedException {
 		String response = webService.webGet("", new HashMap<String, String>());
 
 		if (null == response) {
@@ -38,9 +27,8 @@ public class ExamWebService {
 		}
 
 		try {
-			ExamsList exams = new Gson().fromJson(response, ExamsList.class);
-
-			return exams.getExams();
+			Test exams = new Gson().fromJson(response, Test.class);
+			return exams.getVersion();
 		} catch (Exception e) {
 			throw new WSRequestFailedException(e);
 		}

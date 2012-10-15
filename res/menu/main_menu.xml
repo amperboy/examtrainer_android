@@ -5,6 +5,12 @@
         android:id="@+id/main_menu_clear_stat"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="@string/main_menu_clear_stat"/>
+    
+    <item
+        android:id="@+id/main_menu_settings"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="@string/main_menu_settings"/>
+    
     <item
         android:id="@+id/main_menu_exit"
         android:icon="@android:drawable/ic_menu_close_clear_cancel"

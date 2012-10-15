@@ -11,13 +11,30 @@ import android.widget.Toast;
 import de.higger.examtrainer.R;
 import de.higger.examtrainer.TrainingMode;
 import de.higger.examtrainer.db.service.QuestionResultDBService;
+import de.higger.examtrainer.tool.PrefsHelper;
+import de.higger.examtrainer.tool.PrefsHelper.Preferences;
 
 public class MainActivity extends Activity {
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		PrefsHelper prefsHelper = new PrefsHelper(this);
+		if (null == prefsHelper.read(Preferences.PREF_WS_URI)) {
+			openSettings();
+		} 
+		
 		setContentView(R.layout.main);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		PrefsHelper prefsHelper = new PrefsHelper(this);
+		if (null == prefsHelper.read(Preferences.PREF_WS_URI)) {
+			openSettings();
+		} 
 	}
 
 	public void runRandomTrainer(View view) {
@@ -38,14 +55,12 @@ public class MainActivity extends Activity {
 		QuestionResultDBService questionResultDBService = new QuestionResultDBService(
 				this);
 		questionResultDBService.clearStatistic();
-		
+
 		Toast toast = Toast.makeText(getApplicationContext(),
-				getText(R.string.main_statistic_cleared),
-				Toast.LENGTH_SHORT);
+				getText(R.string.main_statistic_cleared), Toast.LENGTH_SHORT);
 		toast.show();
 	}
-	
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
@@ -60,11 +75,19 @@ public class MainActivity extends Activity {
 		case R.id.main_menu_clear_stat:
 			clearStatistic();
 			break;
+		case R.id.main_menu_settings:
+			openSettings();
+			break;
 		case R.id.main_menu_exit:
 			System.exit(0);
 			break;
 		}
 
 		return true;
+	}
+
+	private void openSettings() {
+		Intent intent = new Intent(this, SettingsActivity.class);
+		startActivity(intent);
 	}
 }

@@ -18,22 +18,30 @@ public class QuestionWebService {
 	private WebService webService;
 
 	public QuestionWebService(Context context) {
-		String url = context.getString(R.string.constants_uri_ws_prefix) + "get_all_questions.php";
+		String url = context.getString(R.string.constants_uri_ws_prefix)
+				+ "get_all_questions.php";
 		webService = new WebService(url);
 	}
-	
-	public List<Question> getQuestions(int examId) throws WSRequestFailedException {
+
+	public List<Question> getQuestions(int examId)
+			throws WSRequestFailedException {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("id_exam", Integer.toString(examId));
-		
+
 		String response = webService.webGet("", parameters);
 
 		if (null == response) {
-			throw new WSRequestFailedException("WebService request fehlgeschlagen.");
+			throw new WSRequestFailedException(
+					"WebService request fehlgeschlagen.");
 		}
 
-		QuestionList questionsList = new Gson().fromJson(response, QuestionList.class);
-		
-		return questionsList.getQuestions();
+		try {
+			QuestionList questionsList = new Gson().fromJson(response,
+					QuestionList.class);
+
+			return questionsList.getQuestions();
+		} catch (Exception e) {
+			throw new WSRequestFailedException(e);
+		}
 	}
 }
