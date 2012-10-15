@@ -8,8 +8,9 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
-import de.higger.examtrainer.R;
 import de.higger.examtrainer.exception.WSRequestFailedException;
+import de.higger.examtrainer.tool.PrefsHelper;
+import de.higger.examtrainer.tool.PrefsHelper.Preferences;
 import de.higger.examtrainer.tool.WebService;
 import de.higger.examtrainer.vo.Question;
 import de.higger.examtrainer.vo.QuestionList;
@@ -18,7 +19,8 @@ public class QuestionWebService {
 	private WebService webService;
 
 	public QuestionWebService(Context context) {
-		String url = context.getString(R.string.constants_uri_ws_prefix)
+		PrefsHelper prefsHelper = new PrefsHelper(context);
+		String url = prefsHelper.read(Preferences.PREF_WS_URI)
 				+ "get_all_questions.php";
 		webService = new WebService(url);
 	}

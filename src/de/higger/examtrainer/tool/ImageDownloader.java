@@ -15,7 +15,7 @@ import android.content.Context;
 import android.net.http.AndroidHttpClient;
 import android.util.Log;
 import de.higger.examtrainer.Constants;
-import de.higger.examtrainer.R;
+import de.higger.examtrainer.tool.PrefsHelper.Preferences;
 
 public class ImageDownloader {
 	private final String LOG_TAG = Constants.LOG_TAG_PRE
@@ -24,7 +24,8 @@ public class ImageDownloader {
 	private final String url;
 
 	public ImageDownloader(Context context) {
-		url = context.getString(R.string.constants_uri_ws_prefix)
+		PrefsHelper prefsHelper = new PrefsHelper(context);
+		url = prefsHelper.read(Preferences.PREF_WS_URI)
 				+ "show_image.php?id_question=";
 	}
 
@@ -33,7 +34,7 @@ public class ImageDownloader {
 				.newInstance("Android");
 		final HttpGet getRequest = new HttpGet(url + imageId);
 		Log.v(LOG_TAG, getRequest.getURI().toString());
-		
+
 		try {
 
 			HttpResponse response = client.execute(getRequest);
@@ -62,7 +63,7 @@ public class ImageDownloader {
 					FileOutputStream fos = new FileOutputStream(target);
 					fos.write(baf.toByteArray());
 					fos.close();
-					
+
 					target.setReadable(true, false);
 
 				} finally {
