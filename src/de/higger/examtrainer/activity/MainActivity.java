@@ -19,24 +19,15 @@ public class MainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		PrefsHelper prefsHelper = new PrefsHelper(this);
-		if (null == prefsHelper.read(Preferences.PREF_WS_URI)) {
-			openSettings();
-		} 
-		
+
 		setContentView(R.layout.main);
-	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
 		PrefsHelper prefsHelper = new PrefsHelper(this);
 		if (null == prefsHelper.read(Preferences.PREF_WS_URI)) {
 			openSettings();
-		} 
+		}
 	}
-
+	
 	public void runRandomTrainer(View view) {
 		Intent intent = new Intent(this, ChoseExamActivity.class);
 		intent.putExtra(ChoseExamActivity.EXTRA_TRAINING_MODE,
