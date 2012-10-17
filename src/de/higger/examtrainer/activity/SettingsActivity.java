@@ -55,6 +55,8 @@ public class SettingsActivity extends Activity {
 	
 	@Override
 	protected void onStop() {
+		super.onStop();
+		
 		PrefsHelper prefsHelper = new PrefsHelper(this);
 		if (null == prefsHelper.read(Preferences.PREF_WS_URI)) {
 			System.exit(0);
