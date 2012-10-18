@@ -70,73 +70,74 @@ public class QuestionDBService {
 	}
 
 	public Question getPreferedQuestion(int examId) {
-		StringBuilder queryString = new StringBuilder("SELECT ");
-		queryString.append(QuestionDDL.COLUMNNAME_ID);
-		queryString.append(" id_question, 2.0 wtg from ");
-		queryString.append(QuestionDDL.TABLE_NAME);
-		queryString.append(" where ");
-		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
-		queryString.append(" = ? and ");
-		queryString.append(QuestionDDL.COLUMNNAME_ID);
-		queryString.append(" not in (SELECT distinct ");
-		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
-		queryString.append(" from ");
-		queryString.append(QuestionResultDDL.TABLE_NAME);
-		queryString.append(" qr, ");
-		queryString.append(QuestionDDL.TABLE_NAME);
-		queryString.append(" q WHERE q.");
-		queryString.append(QuestionDDL.COLUMNNAME_ID);
-		queryString.append(" = qr.");
-		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
-		queryString.append(" and q.");
-		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
-		queryString.append(" = ?) union select ");
-		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
-		queryString.append(" , (cast(");
-		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
-		queryString.append(" as REAL) / (cast(");
-		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_CORRECT);
-		queryString.append(" as REAL) + cast(");
-		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
-		queryString.append(" as REAL))) + 1 - ((cast(");
-		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_CORRECT);
-		queryString.append(" as REAL) + cast(");
-		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
-		queryString.append(" as REAL)) / ( select sum(cast(");
-		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_CORRECT);
-		queryString.append(" as REAL)) + sum(cast(");
-		queryString.append(QuestionResultDDL.COLUMNNAME_ANSWERED_WRONG);
-		queryString.append(" as REAL)) gesamt from ");
-		queryString.append(QuestionResultDDL.TABLE_NAME);
-		queryString.append(" qr, ");
-		queryString.append(QuestionDDL.TABLE_NAME);
-		queryString.append(" q WHERE q.");
-		queryString.append(QuestionDDL.COLUMNNAME_ID);
-		queryString.append(" = qr.");
-		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
-		queryString.append(" and q.");
-		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
-		queryString.append(" = ?)) wtg from ");
-		queryString.append(QuestionResultDDL.TABLE_NAME);
-		queryString.append(" qr, ");
-		queryString.append(QuestionDDL.TABLE_NAME);
-		queryString.append(" q WHERE q.");
-		queryString.append(QuestionDDL.COLUMNNAME_ID);
-		queryString.append(" = qr.");
-		queryString.append(QuestionResultDDL.COLUMNNAME_QUESTION_ID);
-		queryString.append(" and q.");
-		queryString.append(QuestionDDL.COLUMNNAME_EXAM_ID);
-		queryString.append(" = ? order by 2 desc");
+		StringBuilder queryString = new StringBuilder();
+		queryString.append("SELECT ");
+		queryString.append("	id id_question, ");
+		queryString.append("	2.0 wtg ");
+		queryString.append("from ");
+		queryString.append("	question q ");
+		queryString.append("where ");
+		queryString.append("	q.id_exam = ? ");
+		queryString.append("	and id not in ( ");
+		queryString.append("		SELECT ");
+		queryString.append("			distinct id_question ");
+		queryString.append("		from ");
+		queryString.append("			questionresult qr, ");
+		queryString.append("			question q ");
+		queryString.append("		WHERE q.id = qr.id_question and q.id_exam = ? ");
+		queryString.append("	) ");
+		
+		queryString.append("UNION SELECT ");
+		queryString.append("	id_question , ");
+		queryString.append("	( ");
+		
+		//Verhältnis von richtig zu falsch
+		queryString.append("		cast(answered_wrong as REAL) / ( cast(answered_correct as REAL) + cast(answered_wrong as REAL)) ");
+		
+		// Verhältnis der Häufigkeit einer gestellten Frage
+		queryString.append("		+ 1.0 ");
+		queryString.append("		- cast(( ");
+		queryString.append("			SELECT ");
+		queryString.append("				count(*) anzahl ");
+		queryString.append("			FROM ");
+		queryString.append("				question q ");
+		queryString.append("			WHERE");
+		queryString.append("				q.id_exam = ? ");
+		queryString.append("		) as REAL) / cast(( ");
+		queryString.append("			select ");
+		queryString.append("				sum(answered_correct) + sum(answered_wrong) gesamt ");
+		queryString.append("				from ");
+		queryString.append("					questionresult qr, ");
+		queryString.append("					question q ");
+		queryString.append("				WHERE ");
+		queryString.append("					q.id = qr.id_question ");
+		queryString.append("					and q.id_exam = ? ");
+		queryString.append("		) as REAL) * (cast(answered_correct as REAL) + cast(answered_wrong as REAL)) ");
+		
+		queryString.append("	) wtg ");
+		queryString.append("FROM ");
+		queryString.append("	questionresult qr, ");
+		queryString.append("	question q ");
+		queryString.append("WHERE ");
+		queryString.append("	q.id = qr.id_question ");
+		queryString.append("	and q.id_exam = ? ");
+		queryString.append("	order by 2 desc	");
+		
+		queryString.append(";");
 
 		String sExamId = Integer.toString(examId);
 		SQLiteDatabase db = examDBHelper.getReadableDatabase();
 		Cursor mCount = db.rawQuery(queryString.toString(), new String[] {
-				sExamId, sExamId, sExamId, sExamId });
+			sExamId, sExamId,
+			sExamId, sExamId, sExamId
+			});
 		mCount.moveToFirst();
 		int questionId = mCount.getInt(0);
 		double wtg = mCount.getDouble(1);
 		db.close();
 		mCount.close();
+		
+		System.out.println(queryString.toString());
 
 		Log.v(LOG_TAG, "optimized question id: " + questionId);
 
