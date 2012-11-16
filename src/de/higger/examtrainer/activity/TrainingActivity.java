@@ -82,7 +82,7 @@ public class TrainingActivity extends Activity {
 	private void showQuestion() {
 		ScrollView mainScrollView = (ScrollView) findViewById(R.id.trn_view_wrapper);
 		mainScrollView.fullScroll(ScrollView.FOCUS_UP);
-		
+
 		TextView textView = (TextView) findViewById(R.id.trn_text_question_text);
 		textView.setText(displayedQuestion.getQuestion());
 
@@ -90,7 +90,7 @@ public class TrainingActivity extends Activity {
 		if (imageFrame.getChildCount() > 0) {
 			imageFrame.removeViewAt(0);
 		}
-		
+
 		TextView descr = (TextView) findViewById(R.id.trn_desc);
 		descr.setText(displayedQuestion.getDesc());
 
@@ -123,7 +123,8 @@ public class TrainingActivity extends Activity {
 			final TableRow answerRow = (TableRow) getLayoutInflater().inflate(
 					R.layout.training_answer_row, null);
 			TextView answerText = (TextView) answerRow.getChildAt(1);
-			answerText.setText(answer.getAnswer());
+			String answerTextString = answer.getAnswer();
+			answerText.setText(answerTextString);
 
 			answerRow.setOnClickListener(new OnClickListener() {
 
